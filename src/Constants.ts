@@ -1,0 +1,1 @@
+export const ROUNDED_CORNER_RADIUS = 10;

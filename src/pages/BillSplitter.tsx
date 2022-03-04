@@ -1,7 +1,7 @@
 import React from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet } from "react-native";
 import OutputComponent from "../components/OutputComponent";
-import PersonListComponent from "../components/PersonListComponent";
+import PersonListComponent from "../components/person-list/PersonListComponent";
 import TotalBillComponent from "../components/TotalBillComponent";
 
 const BillSplitter = () => {

@@ -3,7 +3,7 @@ import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { Button, Text } from "react-native-elements";
 import { Context as BillContext, selectContributionPerPerson } from "../context/BillContext";
 import launchVenmo from "../api/venmo";
-import { ROUNDED_CORNER_RADIUS } from "../Constants"
+import { ROUNDED_CORNER_RADIUS, BUTTON_COLOR } from "../Constants"
 import { AntDesign } from '@expo/vector-icons';
 import { generateOutputString } from "../utils/GenerateOutput";
 import { copyToClipboard } from "../utils/Clipboard";
@@ -20,20 +20,25 @@ const OutputComponent = () => {
 
     return (
         <View style={styles.outputContainer}>
-            <Text h4>Totals</Text>
+            <View style={styles.header}>
+                <Text h3>Totals </Text>
+                <Share state={state} style={styles.shareAllButton} hasTitle />
+            </View>
             <FlatList 
                 renderItem={({item}) => {
                     let personTotal = isNaN(item.personTotal) ? "" : `${item.personTotal.toFixed(2)}`;
                     return (
                         <View style={styles.person}>
                             <Text style={styles.personName}>{item.name} - ${personTotal}</Text>
-                            <Button 
-                                title="Venmo"
+                            <TouchableOpacity
                                 onPress={() => {
                                     launchVenmo(parseFloat(item.personTotal.toFixed(2)), state.description);
                                 }}
-                            />
-                            <Share itemId={item.id} state={state} />
+                                style={styles.venmoButton}
+                            >
+                                <Text style={styles.venmoText}>Venmo</Text>
+                            </TouchableOpacity> 
+                            <Share itemId={item.id} state={state} style={{padding: 8}} />
                         </View>
                     );
                 }}
@@ -45,6 +50,9 @@ const OutputComponent = () => {
 };
 
 const styles = StyleSheet.create({
+    header: {
+        flexDirection: "row"
+    },
     outputContainer: {
         backgroundColor: "#dddddd",
         borderRadius: ROUNDED_CORNER_RADIUS,
@@ -53,6 +61,7 @@ const styles = StyleSheet.create({
     },
     person: {
         flexDirection: "row",
+        alignItems: "flex-end",
         marginVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: "#cdcdcd"
@@ -60,12 +69,24 @@ const styles = StyleSheet.create({
     personName: {
         fontSize: 20,
         textAlignVertical: "center",
-        flex: 1
+        alignSelf: "flex-start",
+        flex: 1,
+        marginTop: 10
     },
-    copyIcon: {
+    venmoButton: {
+        marginRight: 10,
+        borderRadius: 3,
+        backgroundColor: BUTTON_COLOR,
+        color: BUTTON_COLOR
+    },
+    venmoText: {
+        fontSize: 22,
         padding: 5,
-        borderWidth: 1,
-        backgroundColor: "blue"
+        color: "white"
+    },
+    shareAllButton: {
+        paddingLeft: 0,
+        backgroundColor: "purple"
     }
 });
 

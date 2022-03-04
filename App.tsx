@@ -1,5 +1,3 @@
-import { StyleSheet, View } from 'react-native';
-import { Text } from "react-native-elements";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BillSplitter from './src/pages/BillSplitter';
 import { Provider as BillProvider } from "./src/context/BillContext"
@@ -11,9 +9,9 @@ const App = () => {
 export default () => {
   return (
     <BillProvider>
-      <SafeAreaView style={{flex: 1}}>
-       <App />
-      </SafeAreaView>
+        <SafeAreaView style={{flex: 1}}>
+          <App />
+        </SafeAreaView>
     </BillProvider>
   );
 };

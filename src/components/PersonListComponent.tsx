@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
-import { View, TextInput, StyleSheet, FlatList } from "react-native";
-import { Button, Text, Input } from "react-native-elements";
+import { View, TextInput, StyleSheet, FlatList, TouchableOpacity, Animated } from "react-native";
+import { Button, Text } from "react-native-elements";
 import { Context as BillContext, selectPeopleList } from "../context/BillContext";
+import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 
 const PersonListComponent = () => {
     const [person, setPersonName] = useState("");
@@ -30,6 +31,48 @@ const PersonListComponent = () => {
         />
     </View>;
 
+    const swipeRenderer = (progress: Animated.AnimatedInterpolation,
+                           dragAnimatedValue: Animated.AnimatedInterpolation) => {
+        const opacity = dragAnimatedValue.interpolate({
+            inputRange: [-150, 0],
+            outputRange: [1, 0],
+            extrapolate: 'clamp',
+        });
+        return (
+            <Animated.View style={[styles.deleteButton, {opacity}]}>
+                <Animated.Text>Archive</Animated.Text>
+            </Animated.View>
+        );
+    };
+
+    const swipeHandler = () => {
+        console.log("Swiped! TODO: Delete person");
+    };
+
+    /**
+     <TextInput
+                                    placeholder={`Person ${index+1}`}
+                                    onChangeText={(text) => {
+                                        updatePersonName(item.id, text);
+                                    }}
+                                    onEndEditing={() => { if (secondTextInput) { secondTextInput.focus(); }}}
+                                    value={item.name}
+                                    style={styles.personName}
+                                    selectTextOnFocus
+                                />
+                                <TextInput
+                                    ref={(input) => { secondTextInput = input; }}
+                                    keyboardType="phone-pad"
+                                    style={styles.costInput}
+                                    value={item.share}
+                                    selectTextOnFocus
+                                    onChangeText={(text) => {
+                                        updateShare(item.id, text);
+                                    }}
+                                    placeholder="$$$$"
+                                />
+     */
+
     return (
         <View style={styles.container}>
             <FlatList
@@ -38,29 +81,13 @@ const PersonListComponent = () => {
                     let secondTextInput: TextInput | null;
 
                     return (
-                        <View style={styles.person}>
-                            <TextInput
-                                placeholder={`Person ${index+1}`}
-                                onChangeText={(text) => {
-                                    updatePersonName(item.id, text);
-                                }}
-                                onEndEditing={() => { if (secondTextInput) { secondTextInput.focus(); }}}
-                                value={item.name}
-                                style={styles.personName}
-                                selectTextOnFocus
-                            />
-                            <TextInput
-                                ref={(input) => { secondTextInput = input; }}
-                                keyboardType="phone-pad"
-                                style={styles.costInput}
-                                value={item.share}
-                                selectTextOnFocus
-                                onChangeText={(text) => {
-                                    updateShare(item.id, text);
-                                }}
-                                placeholder="$$$$"
-                            />
-                        </View>
+                        <GestureHandlerRootView>
+                            <Swipeable renderRightActions={swipeRenderer}>
+                                <View style={styles.person}>
+                                    <Text style={styles.personName}>{`Person ${index+1}`}</Text>
+                                </View>
+                            </Swipeable>
+                        </GestureHandlerRootView>
                     );
                 }}
                 keyExtractor={(item) => item.id}
@@ -114,8 +141,29 @@ const styles = StyleSheet.create({
         alignSelf: "flex-end",
         fontSize: 20,
         textAlign: "right",
-
-    }
+    },
+    swipedRow: {
+        backgroundColor: 'red',
+        height: "100%"
+    },
+    swipedConfirmationContainer: {
+        flex: 1,
+    },
+    deleteConfirmationText: {
+        color: '#fcfcfc',
+        fontWeight: 'bold',
+    },
+    deleteButton: {
+        backgroundColor: '#b60000',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        height: '100%',
+    },
+    deleteButtonText: {
+        color: '#fcfcfc',
+        fontWeight: 'bold',
+        padding: 3,
+    },
 });
 
 export default PersonListComponent;

@@ -6,7 +6,7 @@ import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler"
 
 const PersonListComponent = () => {
     const [person, setPersonName] = useState("");
-    const { state, actions: { addPerson, updateShare, updatePersonName }} = useContext(BillContext);
+    const { state, actions: { addPerson, updateShare, updatePersonName, deletePerson }} = useContext(BillContext);
 
     let peopleList = selectPeopleList(state);
     console.log(peopleList);
@@ -40,13 +40,14 @@ const PersonListComponent = () => {
         });
         return (
             <Animated.View style={[styles.deleteButton, {opacity}]}>
-                <Animated.Text>Archive</Animated.Text>
+                <Animated.Text style={{alignSelf: "center"}}>Delete</Animated.Text>
             </Animated.View>
         );
     };
 
     const swipeHandler = () => {
         console.log("Swiped! TODO: Delete person");
+        
     };
 
     /**
@@ -82,9 +83,32 @@ const PersonListComponent = () => {
 
                     return (
                         <GestureHandlerRootView>
-                            <Swipeable renderRightActions={swipeRenderer}>
+                            <Swipeable
+                                renderRightActions={swipeRenderer} 
+                                onSwipeableOpen={() => { deletePerson(item.id) }}>
                                 <View style={styles.person}>
-                                    <Text style={styles.personName}>{`Person ${index+1}`}</Text>
+                                    <TextInput
+                                        placeholder={`Person ${index+1}`}
+                                        onChangeText={(text) => {
+                                            updatePersonName(item.id, text);
+                                        }}
+                                        onEndEditing={() => { if (secondTextInput) { secondTextInput.focus(); }}}
+                                        value={item.name}
+                                        style={styles.personName}
+                                        selectTextOnFocus
+                                    />
+                                    <View style={{flex: 1}}></View>
+                                    <TextInput
+                                        ref={(input) => { secondTextInput = input; }}
+                                        keyboardType="phone-pad"
+                                        style={styles.costInput}
+                                        value={item.share}
+                                        selectTextOnFocus
+                                        onChangeText={(text) => {
+                                            updateShare(item.id, text);
+                                        }}
+                                        placeholder="$$$$"
+                                    />
                                 </View>
                             </Swipeable>
                         </GestureHandlerRootView>
@@ -110,8 +134,7 @@ const styles = StyleSheet.create({
     },
     personName: {
         fontSize: 20,
-        textAlignVertical: "center",
-        flex: 1
+        textAlignVertical: "center"
     },
     newPersonContainer: {
         marginVertical: 10
@@ -121,7 +144,7 @@ const styles = StyleSheet.create({
         flex: 1
     },
     addPerson: {
-        
+
     },
     header: {
         flexDirection: "row",
@@ -158,6 +181,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         height: '100%',
+        width: "100%"
     },
     deleteButtonText: {
         color: '#fcfcfc',

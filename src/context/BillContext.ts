@@ -33,6 +33,9 @@ const BillReducer = (state: BillState, action: Action): BillState => {
             let person = createPerson(action.payload.name);
             return { ...state, people: [ ...state.people, person ] };
         }
+        case 'delete_person': {
+            return { ...state, people: [ ...state.people ].filter(value => action.payload.id !== value.id) };
+        }
         case 'update_person_name': {
             let updatedPeople = updatePerson(state, action.payload.id, 
                 (p) => { return { ...p, name: action.payload.name }});
@@ -80,6 +83,12 @@ function updateDescription(dispatch: React.Dispatch<Action>) {
 function updateShare(dispatch: React.Dispatch<Action>) {
     return (id: string, share: string) => {
         dispatch({ type: 'update_share', payload: { id, share } });
+    };
+};
+
+function deletePerson(dispatch: React.Dispatch<Action>) {
+    return (id: string) => {
+        dispatch({ type: 'delete_person', payload: { id } });
     };
 };
 
@@ -150,7 +159,7 @@ function createInitialState(): BillState {
 // Exports
 
 const Actions = {
-    addPerson, updateShare, updateTotal, updatePersonName, updateDescription
+    addPerson, updateShare, updateTotal, updatePersonName, updateDescription, deletePerson
 };
 
 export const { Context, Provider } = createDataContext<BillState>(BillReducer, Actions, createInitialState());

@@ -4,10 +4,12 @@ import { Text } from "react-native-elements";
 import { STYLES } from "../../Constants";
 import { Context as BillContext, selectPeopleList } from "../../context/BillContext";
 import PersonRow from "./PersonRow";
+import { useNavigation, CommonActions } from "@react-navigation/native";
 
 const PersonListComponent = () => {
     const [person, setPersonName] = useState("");
     const { state, actions: { addPerson }} = useContext(BillContext);
+    const navigation = useNavigation();
 
     let peopleList = selectPeopleList(state);
     console.log(peopleList);
@@ -35,6 +37,9 @@ const PersonListComponent = () => {
             style={STYLES.button}
             onPress={() => {
                 console.log("Adding a dish");
+                navigation.dispatch(CommonActions.navigate({
+                    name: "AddDish"
+                }));
             }}
         >
             <Text style={STYLES.buttonText}>Add a Dish</Text>

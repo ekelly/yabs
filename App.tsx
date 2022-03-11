@@ -6,18 +6,6 @@ import { Provider as BillProvider } from "./src/context/BillContext"
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-/*
-const App = () => {
-  return (
-    <BillProvider>
-        <SafeAreaView style={{flex: 1}}>
-          <BillSplitter />
-        </SafeAreaView>
-    </BillProvider>
-  );
-}
-*/
-
 const Stack = createStackNavigator();
 
 const screenOptions = {
@@ -34,7 +22,7 @@ const RootStackScreen = () => {
               <Stack.Screen name="Home" component={BillSplitter} />
             </Stack.Group>
             <Stack.Group screenOptions={{ presentation: 'modal' }}>
-              <Stack.Screen name="MyModal" component={AddDish} />
+              <Stack.Screen name="AddDish" component={AddDish} />
             </Stack.Group>
           </Stack.Navigator>
         </SafeAreaView>

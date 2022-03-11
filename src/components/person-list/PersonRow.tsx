@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 import { View, TextInput, StyleSheet, Animated } from "react-native";
 import { Context as BillContext, Person } from "../../context/BillContext";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
+import { Button } from "react-native-elements/dist/buttons/Button";
+import { Icon } from "react-native-elements";
 
 interface PersonRowProps {
     person: Person,
@@ -25,11 +27,6 @@ const PersonRow = ({ person, index }: PersonRowProps) => {
         );
     };
 
-    const swipeHandler = () => {
-        console.log("Swiped! TODO: Delete person");
-        
-    };
-
     let secondTextInput: TextInput | null;
 
     return (
@@ -48,7 +45,7 @@ const PersonRow = ({ person, index }: PersonRowProps) => {
                         style={styles.personName}
                         selectTextOnFocus
                     />
-                    <View style={{flex: 1}}></View>
+                    <View style={{flex: 1}} />
                     <TextInput
                         ref={(input) => { secondTextInput = input; }}
                         keyboardType="phone-pad"
@@ -76,8 +73,6 @@ const styles = StyleSheet.create({
         textAlignVertical: "center"
     },
     costInput: {
-        minWidth: 60,
-        marginLeft: 10,
         alignSelf: "flex-end",
         fontSize: 20,
         textAlign: "right",
@@ -88,6 +83,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         height: '100%',
         width: "100%"
+    },
+    plusIcon: {
+        marginLeft: 10
     }
 });
 

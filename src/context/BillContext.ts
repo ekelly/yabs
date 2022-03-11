@@ -144,7 +144,7 @@ function calculateTotals(state: BillState): TotalContributionsList {
 function createPerson(name: string): Person {
     return {
         name,
-        share: "1",
+        share: "",
         id: uuidv4()
     };
 };

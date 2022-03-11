@@ -1,13 +1,13 @@
 import React, { useContext, useState } from "react";
-import { View, TextInput, StyleSheet, FlatList, TouchableOpacity, Animated } from "react-native";
-import { Button, Text } from "react-native-elements";
+import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { Text } from "react-native-elements";
+import { STYLES } from "../../Constants";
 import { Context as BillContext, selectPeopleList } from "../../context/BillContext";
-import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 import PersonRow from "./PersonRow";
 
 const PersonListComponent = () => {
     const [person, setPersonName] = useState("");
-    const { state, actions: { addPerson, updateShare, updatePersonName, deletePerson }} = useContext(BillContext);
+    const { state, actions: { addPerson }} = useContext(BillContext);
 
     let peopleList = selectPeopleList(state);
     console.log(peopleList);
@@ -18,8 +18,8 @@ const PersonListComponent = () => {
     </View>;
 
     const Footer = () => <View style={styles.newPersonContainer}>
-        <Button
-            title="Add Person"
+        <TouchableOpacity
+            style={STYLES.button}
             onPress={() => {
                 if (person) {
                     addPerson(person);
@@ -28,7 +28,17 @@ const PersonListComponent = () => {
                     addPerson("Person " + (peopleList.length + 1));
                 }
             }}
-        />
+        >
+            <Text style={STYLES.buttonText}>Add Person</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+            style={STYLES.button}
+            onPress={() => {
+                console.log("Adding a dish");
+            }}
+        >
+            <Text style={STYLES.buttonText}>Add a Dish</Text>
+        </TouchableOpacity>
     </View>;
 
     return (
@@ -52,20 +62,23 @@ const styles = StyleSheet.create({
         flex: 1
     },
     newPersonContainer: {
-        marginVertical: 10
+        marginVertical: 10,
+        flexDirection: "row",
+        justifyContent: "space-around"
     },
     header: {
         flexDirection: "row",
         borderBottomColor: "grey",
         borderBottomWidth: 2,
-        paddingBottom: 3
+        paddingBottom: 3,
+        alignContent: "space-between"
     },
     headerLabels: {
         fontStyle: "italic"
     },
     peopleList: {
         flexGrow: 0
-    }
+    },
 });
 
 export default PersonListComponent;

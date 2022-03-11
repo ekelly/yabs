@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "yabs",
+    "owner": "erick125",
     "slug": "yabs",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,15 +12,20 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/809d6fc6-f5fe-4711-9c0f-bcdd0cb54d1c"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "net.erickelly.yabs.ios",
+      "buildNumber": "0.1.0"
     },
     "android": {
+      "package": "net.erickelly.yabs.android",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -27,6 +33,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }

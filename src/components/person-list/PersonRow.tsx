@@ -2,8 +2,6 @@ import React, { useContext } from "react";
 import { View, TextInput, StyleSheet, Animated } from "react-native";
 import { Context as BillContext, Person } from "../../context/BillContext";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
-import { Button } from "react-native-elements/dist/buttons/Button";
-import { Icon } from "react-native-elements";
 
 interface PersonRowProps {
     person: Person,

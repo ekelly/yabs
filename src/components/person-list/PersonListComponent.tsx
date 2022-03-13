@@ -12,7 +12,6 @@ const PersonListComponent = () => {
     const navigation = useNavigation();
 
     let peopleList = selectPeopleList(state);
-    console.log(peopleList);
 
     const Header = () => <View style={styles.header}>
         <Text h4 style={{...styles.headerLabels, flex: 1 }}>Name</Text>

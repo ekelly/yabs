@@ -45,6 +45,8 @@ const BillReducer = (state: BillState, action: Action): BillState => {
             return { ...state, people: updatePerson(state, action.payload.id, 
                 (p) => { return { ...p, share: action.payload.share }})};
         }
+        case 'add_shares':
+            return { ...state, people: updateShares(state, action.payload.ids, action.payload.share) };
         case 'update_total':
             return { ...state, total: action.payload.total };
         case 'update_description':
@@ -86,6 +88,12 @@ function updateShare(dispatch: React.Dispatch<Action>) {
     };
 };
 
+function addShares(dispatch: React.Dispatch<Action>) {
+    return (share: string, ids: Set<string>) => {
+        dispatch({ type: 'add_shares', payload: { ids, share } });
+    };
+};
+
 function deletePerson(dispatch: React.Dispatch<Action>) {
     return (id: string) => {
         dispatch({ type: 'delete_person', payload: { id } });
@@ -108,6 +116,23 @@ function updatePerson(state: BillState, id: string, updateFunc: (p: Person) => P
         return [ ...state.people.map<Person>(p => p.id === id ? updateFunc({ ...p }) : p) ];
     }
     return state.people;
+}
+
+function updateShares(state: BillState, ids: Set<string>, share: string) {
+    let newState = [ ...state.people.map<Person>(p => ids.has(p.id) ? { ...p, share: addToShare(p, share) } : p) ];
+    return newState;
+}
+
+function addToShare(person: Person, share: string) {
+    let currentShare = getShare(person);
+    if (share) {
+        let shareNum = parseFloat(share);
+        if (isNaN(shareNum)) {
+            return person.share;
+        }
+        return (currentShare + shareNum).toFixed(2);
+    }
+    return currentShare.toFixed(2);
 }
 
 function getShare(person: Person): number {
@@ -159,7 +184,7 @@ function createInitialState(): BillState {
 // Exports
 
 const Actions = {
-    addPerson, updateShare, updateTotal, updatePersonName, updateDescription, deletePerson
+    addPerson, updateShare, updateTotal, updatePersonName, updateDescription, deletePerson, addShares
 };
 
 export const { Context, Provider } = createDataContext<BillState>(BillReducer, Actions, createInitialState());

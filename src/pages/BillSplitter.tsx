@@ -5,7 +5,6 @@ import PersonListComponent from "../components/person-list/PersonListComponent";
 import TotalBillComponent from "../components/TotalBillComponent";
 
 const BillSplitter = () => {
-    
 
     return (
         <View style={styles.container}>

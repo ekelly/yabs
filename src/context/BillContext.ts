@@ -7,21 +7,34 @@ import { v4 as uuidv4 } from 'uuid';
 
 export type Person = {
     name: string, // Human readable, for keeping track of who is who
-    share: string, // The proportion of the bill which is due to this person
+    share: string, // The proportion of the bill which is due to this person, "in pennies"
     id: string // For internal tracking purposes
+    transactions: Array<TransactionId>
 };
 
 export type BillState = {
     description: string,
-    total: string, // The total cost of the bill, including tax & tip
+    total: number, // The total cost of the bill, including tax & tip in pennies
     people: Array<Person> // The people involved in the bill splitting
 };
 
 export type PersonContribution = {
-    id: string // For internal tracking purposes
+    id: string, // For internal tracking purposes
     name: string, // Human readable, for keeping track of who is who
     personTotal: number, // The amount of $$ that this person must contribute to the bill
 }
+
+export type Transaction = {
+    id: TransactionId, // Identifier for the transaction
+    adjustments: Array<Adjustment>
+}
+
+export type Adjustment = {
+    id: string, // Identifier of the person being adjusted
+    adjustAmount: number // Number "in pennies" being adjusted
+}
+
+export type TransactionId = string;
 
 type TotalContributionsList = Array<PersonContribution>;
 
@@ -29,32 +42,54 @@ type TotalContributionsList = Array<PersonContribution>;
 
 const BillReducer = (state: BillState, action: Action): BillState => {
     switch (action.type) {
-        case 'add_person': {
-            let person = createPerson(action.payload.name);
-            return { ...state, people: [ ...state.people, person ] };
-        }
-        case 'delete_person': {
-            return { ...state, people: [ ...state.people ].filter(value => action.payload.id !== value.id) };
-        }
-        case 'update_person_name': {
-            let updatedPeople = updatePerson(state, action.payload.id, 
-                (p) => { return { ...p, name: action.payload.name }});
-            return { ...state, people: updatedPeople };
-        }
-        case 'update_share': {
-            return { ...state, people: updatePerson(state, action.payload.id, 
-                (p) => { return { ...p, share: action.payload.share }})};
-        }
+        case 'add_person': 
+            return internalAddPerson(state, action.payload.name);
+        case 'delete_person': 
+            return internalDeletePerson(state, action.payload.id);
+        case 'update_person_name': 
+            return internalUpdatePersonName(state, action.payload.id, action.payload.name);
+        case 'update_share': 
+            return internalUpdateShare(state, action.payload.id, action.payload.share);
         case 'add_shares':
-            return { ...state, people: updateShares(state, action.payload.ids, action.payload.share) };
+            return internalAddShares(state, action.payload.ids, action.payload.share);
         case 'update_total':
-            return { ...state, total: action.payload.total };
+            return internalUpdateTotal(state, action.payload.total);
         case 'update_description':
-            return { ...state, description: action.payload.description };
+            return internalUpdateDescription(state, action.payload.description);
         default:
             return state;
     }
 };
+
+function internalAddPerson(state: BillState, name: string): BillState {
+    let person = createPerson(name);
+    return { ...state, people: [ ...state.people, person ] };
+}
+
+function internalDeletePerson(state: BillState, id: string): BillState {
+    return { ...state, people: [ ...state.people ].filter(value => id !== value.id) };
+}
+
+function internalUpdatePersonName(state: BillState, id: string, name: string): BillState {
+    let updatedPeople = updatePerson(state, id, (p) => { return { ...p, name: name }});
+    return { ...state, people: updatedPeople };
+}
+
+function internalUpdateShare(state: BillState, id: string, share: string): BillState {
+    return { ...state, people: updatePerson(state, id, (p) => { return { ...p, share: share }})};
+}
+
+function internalAddShares(state: BillState, ids: Set<string>, share: string): BillState {
+    return { ...state, people: updateShares(state, ids, share) };
+}
+
+function internalUpdateTotal(state: BillState, total: number): BillState {
+    return { ...state, total };
+}
+
+function internalUpdateDescription(state: BillState, description: string): BillState {
+    return { ...state, description: description };
+}
 
 // Actions
 
@@ -71,7 +106,7 @@ function updatePersonName(dispatch: React.Dispatch<Action>) {
 }
 
 function updateTotal(dispatch: React.Dispatch<Action>) {
-    return (total: string) => {
+    return (total: number) => {
         dispatch({ type: 'update_total', payload: { total }});
     };
 };
@@ -143,8 +178,8 @@ function getShare(person: Person): number {
     return 0;
 }
 
-function getTotal(state: BillState): number { 
-    return parseFloat(state.total);
+function getTotalInDollars(state: BillState): number { 
+    return state.total / 100;
 };
 
 function calculateTotals(state: BillState): TotalContributionsList {
@@ -157,9 +192,9 @@ function calculateTotals(state: BillState): TotalContributionsList {
     
     let contributionList: TotalContributionsList = [];
 
-    peopleList.forEach((value) => {
-        let personContribution = { id: value.id, name: value.name, personTotal: 0 };
-        personContribution.personTotal = parseFloat((getTotal(state) * (getShare(value) / totalShares)).toFixed(2));
+    peopleList.forEach((person) => {
+        let personContribution = { id: person.id, name: person.name, personTotal: 0 };
+        personContribution.personTotal = parseFloat((getTotalInDollars(state) * (getShare(person) / totalShares)).toFixed(2));
         contributionList.push(personContribution);
     });
 
@@ -170,7 +205,8 @@ function createPerson(name: string): Person {
     return {
         name,
         share: "",
-        id: uuidv4()
+        id: uuidv4(),
+        transactions: []
     };
 };
 
@@ -178,13 +214,17 @@ function createInitialState(): BillState {
     let person1 = createPerson("Person 1");
     let person2 = createPerson("Person 2");
     let people = [ person1, person2 ];
-    return { description: "", total: "", people: people };
+    return { description: "", total: 0, people: people };
 }
 
 // Exports
 
+export function getDisplayableTotal(total: number): string {
+    return (total / 100).toFixed(2);
+}
+
 const Actions = {
-    addPerson, updateShare, updateTotal, updatePersonName, updateDescription, deletePerson, addShares
+    addPerson, updateShare, updateTotal, updatePersonName, updateDescription, deletePerson, addShares,
 };
 
 export const { Context, Provider } = createDataContext<BillState>(BillReducer, Actions, createInitialState());

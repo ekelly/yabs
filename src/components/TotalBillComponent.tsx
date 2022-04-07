@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Text } from "react-native-elements";
-import { Context as BillContext } from "../context/BillContext";
+import { Context as BillContext, getDisplayableTotal } from "../context/BillContext";
 import { ROUNDED_CORNER_RADIUS } from "../Constants";
 
 const TotalBillComponent = () => {
-    const { state: { total, description }, actions: { updateTotal, updateDescription } } = useContext(BillContext);
+    const { state: { total, description }, 
+    actions: { updateTotal, updateDescription } } = useContext(BillContext);
 
     return (
         <View style={styles.container}>
@@ -18,7 +19,7 @@ const TotalBillComponent = () => {
             { total ? <Text style={styles.dollarSign}>$ </Text> : null }
             <TextInput
                 placeholder="$$.$$"
-                value={total}
+                value={getDisplayableTotal(total)}
                 style={styles.costInput}
                 keyboardType="phone-pad"
                 onChangeText={updateTotal}

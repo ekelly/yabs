@@ -12,7 +12,7 @@ import Share from "../components/Share";
 const OutputComponent = () => {
     const { state } = useContext(BillContext);
 
-    if (isNaN(parseFloat(state.total))) {
+    if (isNaN(state.total) || state.total === 0) {
         return null;
     }
 

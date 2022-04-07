@@ -1,0 +1,41 @@
+
+
+Requirements:
+- Maintain a history of each transaction
+   - A transaction can contain multiple people and multiple different values
+   - This should be keyed on both the transaction, and the person. (undo button for the thing I just did, and person)
+- Need the total of the entire bill
+- Need the names of all the participants involved, and how much their share was
+- Need the name of the reason for bill splitting
+
+UX Requirements
+- Need to be able to undo the last transaction
+- Need to list (& undo) all transactions for a particular person
+- Automatically place the decimal point. "ignore" decimal point inputs?
+
+State:
+- Name
+- total (in pennies)
+- people involved
+
+Amount:
+- Positive Number, in pennies
+
+Transaction:
+- id
+- List of <PersonId, Amount>
+
+Person:
+- Name
+- List of ids of transactions that involve them?
+- Share
+
+
+
+
+
+
+
+
+
+

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { View, TextInput, StyleSheet, Animated } from "react-native";
-import { Context as BillContext, Person } from "../../context/BillContext";
+import { Context as BillContext, Person, getDisplayableTotal } from "../../context/BillContext";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 
 interface PersonRowProps {
@@ -48,7 +48,7 @@ const PersonRow = ({ person, index }: PersonRowProps) => {
                         ref={(input) => { secondTextInput = input; }}
                         keyboardType="phone-pad"
                         style={styles.costInput}
-                        value={person.share}
+                        value={getDisplayableTotal(person.share)}
                         selectTextOnFocus
                         onChangeText={(text) => {
                             updateShare(person.id, text);

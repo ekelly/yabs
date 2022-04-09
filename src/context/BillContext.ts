@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export type Person = {
     name: string, // Human readable, for keeping track of who is who
-    share: string, // The proportion of the bill which is due to this person, "in pennies"
+    share: number, // The proportion of the bill which is due to this person, "in pennies"
     id: string // For internal tracking purposes
     transactions: Array<TransactionId>
 };
@@ -16,6 +16,7 @@ export type BillState = {
     description: string,
     total: number, // The total cost of the bill, including tax & tip in pennies
     people: Array<Person> // The people involved in the bill splitting
+    transactions: Array<Transaction> // The list of transactions
 };
 
 export type PersonContribution = {
@@ -75,12 +76,36 @@ function internalUpdatePersonName(state: BillState, id: string, name: string): B
     return { ...state, people: updatedPeople };
 }
 
-function internalUpdateShare(state: BillState, id: string, share: string): BillState {
-    return { ...state, people: updatePerson(state, id, (p) => { return { ...p, share: share }})};
+function internalUpdateShare(state: BillState, id: string, share: number): BillState {
+    let transaction: Transaction = { id: "t-" + uuidv4(), adjustments: [
+        { id, adjustAmount: share }
+    ]};
+    return { 
+        ...state, 
+        transactions: [ ...state.transactions, transaction ],
+        people: updatePerson(state, id, (p) => { 
+            return { ...p, share, transactions: [ ...p.transactions, transaction.id ] };
+        })
+    };
 }
 
-function internalAddShares(state: BillState, ids: Set<string>, share: string): BillState {
-    return { ...state, people: updateShares(state, ids, share) };
+function internalAddShares(state: BillState, ids: Set<string>, share: number): BillState {
+    let adjustments: Adjustment[] = Array.from(ids).map<Adjustment>(id => {
+        return { id, adjustAmount: share };
+    });
+    let transaction: Transaction = { id: "t-" + uuidv4(), adjustments };
+    let people: Person[] = Array.from(state.people).map(person => {
+        if (ids.has(person.id)) {
+            return { ...person, transactions: [...person.transactions, transaction.id ]}
+        } else {
+            return person;
+        }
+    });
+    return {
+        ...state, 
+        transactions: [ ...state.transactions, transaction ],
+        people
+    };
 }
 
 function internalUpdateTotal(state: BillState, total: number): BillState {
@@ -88,7 +113,7 @@ function internalUpdateTotal(state: BillState, total: number): BillState {
 }
 
 function internalUpdateDescription(state: BillState, description: string): BillState {
-    return { ...state, description: description };
+    return { ...state, description };
 }
 
 // Actions
@@ -124,7 +149,7 @@ function updateShare(dispatch: React.Dispatch<Action>) {
 };
 
 function addShares(dispatch: React.Dispatch<Action>) {
-    return (share: string, ids: Set<string>) => {
+    return (share: number, ids: Set<string>) => {
         dispatch({ type: 'add_shares', payload: { ids, share } });
     };
 };
@@ -153,27 +178,9 @@ function updatePerson(state: BillState, id: string, updateFunc: (p: Person) => P
     return state.people;
 }
 
-function updateShares(state: BillState, ids: Set<string>, share: string) {
-    let newState = [ ...state.people.map<Person>(p => ids.has(p.id) ? { ...p, share: addToShare(p, share) } : p) ];
-    return newState;
-}
-
-function addToShare(person: Person, share: string) {
-    let currentShare = getShare(person);
-    if (share) {
-        let shareNum = parseFloat(share);
-        if (isNaN(shareNum)) {
-            return person.share;
-        }
-        return (currentShare + shareNum).toFixed(2);
-    }
-    return currentShare.toFixed(2);
-}
-
 function getShare(person: Person): number {
     if (person.share) {
-        let share = parseFloat(person.share);
-        return isNaN(share) ? 0 : share;
+        return person.share;
     }
     return 0;
 }
@@ -204,7 +211,7 @@ function calculateTotals(state: BillState): TotalContributionsList {
 function createPerson(name: string): Person {
     return {
         name,
-        share: "",
+        share: 0,
         id: uuidv4(),
         transactions: []
     };
@@ -214,7 +221,7 @@ function createInitialState(): BillState {
     let person1 = createPerson("Person 1");
     let person2 = createPerson("Person 2");
     let people = [ person1, person2 ];
-    return { description: "", total: 0, people: people };
+    return { description: "", total: 0, people: people, transactions: [] };
 }
 
 // Exports

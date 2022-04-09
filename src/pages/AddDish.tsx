@@ -8,21 +8,21 @@ type SelectedPeopleState = Set<string>;
 
 function getItemCostPerPerson(itemCost: string,
                               selectedPeople: SelectedPeopleState) {
-    let itemCostPerPerson = parseFloat(itemCost) / selectedPeople.size;
+    let itemCostPerPerson = Math.abs(parseFloat(itemCost) * 100 / selectedPeople.size);
     if (isNaN(itemCostPerPerson)) {
         itemCostPerPerson = 0;
     }
-    return itemCostPerPerson.toFixed(2);
+    return itemCostPerPerson;
 }
 
 function getCostPerPerson(itemCost: string,
                           peopleList: Person[],
                           selectedPeople: SelectedPeopleState) {
     let itemCostPerPerson = getItemCostPerPerson(itemCost, selectedPeople);
-    let singleDishShareList = peopleList.map<Person>((value) => {
+    let singleDishShareList = peopleList.map<Person>((person) => {
         return {
-            ...value,
-            share: selectedPeople.has(value.id) ? itemCostPerPerson : "0"
+            ...person,
+            share: selectedPeople.has(person.id) ? itemCostPerPerson : 0
         }
     });
 

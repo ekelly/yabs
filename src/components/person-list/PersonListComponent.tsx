@@ -13,6 +13,8 @@ const PersonListComponent = () => {
 
     let peopleList = selectPeopleList(state);
 
+    console.log(state);
+
     const Header = () => <View style={styles.header}>
         <Text h4 style={{...styles.headerLabels, flex: 1 }}>Name</Text>
         <Text h4 style={styles.headerLabels}>Shares</Text>

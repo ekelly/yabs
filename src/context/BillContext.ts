@@ -22,7 +22,7 @@ export type BillState = {
 export type PersonContribution = {
     id: string, // For internal tracking purposes
     name: string, // Human readable, for keeping track of who is who
-    personTotal: number, // The amount of $$ that this person must contribute to the bill
+    personTotal: string, // The amount of $$ that this person must contribute to the bill
 }
 
 export type Transaction = {
@@ -68,6 +68,7 @@ function internalAddPerson(state: BillState, name: string): BillState {
 }
 
 function internalDeletePerson(state: BillState, id: string): BillState {
+    // TODO: deleting a person should recalculate the total split
     return { ...state, people: [ ...state.people ].filter(value => id !== value.id) };
 }
 
@@ -143,7 +144,7 @@ function updateDescription(dispatch: React.Dispatch<Action>) {
 };
 
 function updateShare(dispatch: React.Dispatch<Action>) {
-    return (id: string, share: string) => {
+    return (id: string, share: number) => {
         dispatch({ type: 'update_share', payload: { id, share } });
     };
 };
@@ -179,10 +180,7 @@ function updatePerson(state: BillState, id: string, updateFunc: (p: Person) => P
 }
 
 function getShare(person: Person): number {
-    if (person.share) {
-        return person.share;
-    }
-    return 0;
+    return person.share;
 }
 
 function getTotalInDollars(state: BillState): number { 
@@ -191,8 +189,8 @@ function getTotalInDollars(state: BillState): number {
 
 function calculateTotals(state: BillState): TotalContributionsList {
     let peopleList = selectPeopleList(state);
-    let totalShares = peopleList.map<number>(getShare).reduce((p, c) => p + c, 0);
-    
+    let totalShares: number = peopleList.map<number>(getShare).reduce<number>((acc, v) => acc + v, 0);
+
     if (totalShares == 0) {
         return [];
     }
@@ -200,8 +198,8 @@ function calculateTotals(state: BillState): TotalContributionsList {
     let contributionList: TotalContributionsList = [];
 
     peopleList.forEach((person) => {
-        let personContribution = { id: person.id, name: person.name, personTotal: 0 };
-        personContribution.personTotal = parseFloat((getTotalInDollars(state) * (getShare(person) / totalShares)).toFixed(2));
+        let personContribution = { id: person.id, name: person.name, personTotal: "" };
+        personContribution.personTotal = (getTotalInDollars(state) * (getShare(person) / totalShares)).toFixed(2);
         contributionList.push(personContribution);
     });
 
@@ -227,7 +225,11 @@ function createInitialState(): BillState {
 // Exports
 
 export function getDisplayableTotal(total: number): string {
-    return (total / 100).toFixed(2);
+    if (total === 0) {
+        return "";
+    } else {
+        return (total / 100).toFixed(2);
+    }
 }
 
 const Actions = {

@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { View, TextInput, StyleSheet, Animated } from "react-native";
 import { Context as BillContext, Person, getDisplayableTotal } from "../../context/BillContext";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
+import { isNumeric } from "../../utils/NumberUtils";
 
 interface PersonRowProps {
     person: Person,
@@ -10,6 +11,7 @@ interface PersonRowProps {
 
 const PersonRow = ({ person, index }: PersonRowProps) => {
     const { state, actions: { updateShare, updatePersonName, deletePerson }} = useContext(BillContext);
+    const [personShare, setPersonShare] = useState<string>(""+person.share);
 
     const swipeRenderer = (progress: Animated.AnimatedInterpolation,
                            dragAnimatedValue: Animated.AnimatedInterpolation) => {
@@ -48,10 +50,17 @@ const PersonRow = ({ person, index }: PersonRowProps) => {
                         ref={(input) => { secondTextInput = input; }}
                         keyboardType="phone-pad"
                         style={styles.costInput}
-                        value={getDisplayableTotal(person.share)}
+                        value={personShare}
                         selectTextOnFocus
                         onChangeText={(text) => {
-                            updateShare(person.id, text);
+                            if (isNumeric(text)) {
+                                setPersonShare(text);
+                            }
+                        }}
+                        onEndEditing={({ nativeEvent: { text }}) => {
+                            if (isNumeric(text)) {
+                                updateShare(person.id, parseFloat(text));
+                            }
                         }}
                         placeholder="$$$$"
                     />

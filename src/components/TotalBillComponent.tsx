@@ -1,12 +1,14 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Text } from "react-native-elements";
 import { Context as BillContext, getDisplayableTotal } from "../context/BillContext";
 import { ROUNDED_CORNER_RADIUS } from "../Constants";
+import { isNumeric, textToNumber } from "../utils/NumberUtils";
 
 const TotalBillComponent = () => {
     const { state: { total, description }, 
-    actions: { updateTotal, updateDescription } } = useContext(BillContext);
+        actions: { updateTotal, updateDescription } } = useContext(BillContext);
+    const [stringTotal, setStringTotal] = useState<string>(getDisplayableTotal(total));
 
     return (
         <View style={styles.container}>
@@ -16,13 +18,26 @@ const TotalBillComponent = () => {
                 keyboardType="ascii-capable"
                 onChangeText={updateDescription}
             />
-            { total ? <Text style={styles.dollarSign}>$ </Text> : null }
+            { stringTotal ? <Text style={styles.dollarSign}>$ </Text> : null }
             <TextInput
                 placeholder="$$.$$"
-                value={getDisplayableTotal(total)}
+                value={stringTotal}
                 style={styles.costInput}
                 keyboardType="phone-pad"
-                onChangeText={updateTotal}
+                onChangeText={(text) => {
+                    if (isNumeric(text)) {
+                        setStringTotal(text);
+                    }
+                }}
+                onEndEditing={({ nativeEvent: { text }}) => {
+                    let num = textToNumber(text);
+                    if (num) {
+                        updateTotal(num);
+                    } else {
+                        updateTotal(0);
+                    }
+                }}
+                showSoftInputOnFocus
             />
         </View>
     );

@@ -1,12 +1,9 @@
 import React, { useContext } from "react";
 import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
-import { Button, Text } from "react-native-elements";
+import { Text } from "react-native-elements";
 import { Context as BillContext, selectContributionPerPerson } from "../context/BillContext";
 import launchVenmo from "../api/venmo";
 import { ROUNDED_CORNER_RADIUS, BUTTON_COLOR } from "../Constants"
-import { AntDesign } from '@expo/vector-icons';
-import { generateOutputString } from "../utils/GenerateOutput";
-import { copyToClipboard } from "../utils/Clipboard";
 import Share from "../components/Share";
 
 const OutputComponent = () => {
@@ -26,13 +23,12 @@ const OutputComponent = () => {
             </View>
             <FlatList 
                 renderItem={({item}) => {
-                    let personTotal = isNaN(item.personTotal) ? "" : `${item.personTotal.toFixed(2)}`;
                     return (
                         <View style={styles.person}>
-                            <Text style={styles.personName}>{item.name} - ${personTotal}</Text>
+                            <Text style={styles.personName}>{item.name} - ${item.personTotal}</Text>
                             <TouchableOpacity
                                 onPress={() => {
-                                    launchVenmo(parseFloat(item.personTotal.toFixed(2)), state.description);
+                                    launchVenmo(parseFloat(item.personTotal), state.description);
                                 }}
                                 style={styles.venmoButton}
                             >

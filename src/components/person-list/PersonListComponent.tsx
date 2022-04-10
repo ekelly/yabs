@@ -45,6 +45,17 @@ const PersonListComponent = () => {
         >
             <Text style={STYLES.buttonText}>Add a Dish</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+            style={STYLES.button}
+            onPress={() => {
+                console.log("History");
+                navigation.dispatch(CommonActions.navigate({
+                    name: "History"
+                }));
+            }}
+        >
+            <Text style={STYLES.buttonText}>History</Text>
+        </TouchableOpacity>
     </View>;
 
     return (

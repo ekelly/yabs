@@ -6,19 +6,19 @@ import { useNavigation } from "@react-navigation/native";
 
 type SelectedPeopleState = Set<string>;
 
-function getItemCostPerPerson(itemCost: string,
-                              selectedPeople: SelectedPeopleState) {
-    let itemCostPerPerson = Math.abs(parseFloat(itemCost) * 100 / selectedPeople.size);
+function getItemSharePerPerson(itemCost: string,
+                                       selectedPeople: SelectedPeopleState) {
+    let itemCostPerPerson = parseFloat(itemCost) / selectedPeople.size;
     if (isNaN(itemCostPerPerson)) {
         itemCostPerPerson = 0;
     }
     return itemCostPerPerson;
 }
 
-function getCostPerPerson(itemCost: string,
-                          peopleList: Person[],
-                          selectedPeople: SelectedPeopleState) {
-    let itemCostPerPerson = getItemCostPerPerson(itemCost, selectedPeople);
+function getSharePerPerson(itemCost: string,
+                           peopleList: Person[],
+                           selectedPeople: SelectedPeopleState) {
+    let itemCostPerPerson = getItemSharePerPerson(itemCost, selectedPeople);
     let singleDishShareList = peopleList.map<Person>((person) => {
         return {
             ...person,
@@ -50,10 +50,10 @@ const AddDish = () => {
                 />
             </View>
             <PersonSelectComponent 
-                data={getCostPerPerson(itemCost, peopleList, selectedPeople)}
+                data={getSharePerPerson(itemCost, peopleList, selectedPeople)}
                 onCancel={() => { navigation.goBack() }} 
                 onDone={() => {
-                    addShares(getItemCostPerPerson(itemCost, selectedPeople), selectedPeople);
+                    addShares(getItemSharePerPerson(itemCost, selectedPeople), selectedPeople);
                     navigation.goBack();
                 }} 
                 onSelectionChanged={(selectedPeople) => {

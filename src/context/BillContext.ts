@@ -57,6 +57,8 @@ const BillReducer = (state: BillState, action: Action): BillState => {
             return internalUpdateTotal(state, action.payload.total);
         case 'update_description':
             return internalUpdateDescription(state, action.payload.description);
+        case 'delete_transaction':
+            return internalDeleteTransaction(state, action.payload.id);
         default:
             return state;
     }
@@ -69,6 +71,7 @@ function internalAddPerson(state: BillState, name: string): BillState {
 
 function internalDeletePerson(state: BillState, id: string): BillState {
     // TODO: deleting a person should recalculate the total split
+    // It should also modify transactions to remove the person from it
     return { ...state, people: [ ...state.people ].filter(value => id !== value.id) };
 }
 
@@ -78,8 +81,14 @@ function internalUpdatePersonName(state: BillState, id: string, name: string): B
 }
 
 function internalUpdateShare(state: BillState, id: string, share: number): BillState {
+    let person = selectPerson(state, id);
+    if (!person) {
+        return state;
+    }
+    let previousShare = person.share;
+    let adjustAmount = share - previousShare;
     let transaction: Transaction = { id: "t-" + uuidv4(), adjustments: [
-        { id, adjustAmount: share }
+        { id, adjustAmount }
     ]};
     return { 
         ...state, 
@@ -97,7 +106,7 @@ function internalAddShares(state: BillState, ids: Set<string>, share: number): B
     let transaction: Transaction = { id: "t-" + uuidv4(), adjustments };
     let people: Person[] = Array.from(state.people).map(person => {
         if (ids.has(person.id)) {
-            return { ...person, transactions: [...person.transactions, transaction.id ]}
+            return { ...person, transactions: [...person.transactions, transaction.id ], share: person.share + share }
         } else {
             return person;
         }
@@ -115,6 +124,28 @@ function internalUpdateTotal(state: BillState, total: number): BillState {
 
 function internalUpdateDescription(state: BillState, description: string): BillState {
     return { ...state, description };
+}
+
+function internalDeleteTransaction(state: BillState, id: string): BillState {
+    let transactionToDelete = state.transactions.find(transaction => transaction.id === id);
+    return { 
+        ...state,
+        people: [ ...state.people ].map<Person>(person => {
+            let share = person.share;
+            if (transactionToDelete) {
+                let adjustment = transactionToDelete.adjustments.find(adjustment => adjustment.id === person.id);
+                if (adjustment) {
+                    share = share - adjustment.adjustAmount;
+                }
+            }
+            return {
+                ...person,
+                share,
+                transactions: [ ...person.transactions ].filter(transactionId => id !== transactionId)
+            }
+        }),
+        transactions: [ ...state.transactions ].filter(value => id !== value.id) 
+    };
 }
 
 // Actions
@@ -161,6 +192,12 @@ function deletePerson(dispatch: React.Dispatch<Action>) {
     };
 };
 
+function deleteTransaction(dispatch: React.Dispatch<Action>) {
+    return (id: string) => {
+        dispatch({ type: 'delete_transaction', payload: { id } });
+    };
+};
+
 // Selectors
 
 export const selectContributionPerPerson = calculateTotals;
@@ -168,6 +205,12 @@ export const selectContributionPerPerson = calculateTotals;
 export const selectPeopleList = (state: BillState) => Object.entries(state.people).map(it => it[1]);
 
 export const selectPerson = (state: BillState, id: string) => state.people.find(person => person.id === id);
+
+export const selectHistory = (state: BillState) => Object.values(state.transactions);
+
+export const selectTransactionParticipants = (state: BillState, transactionId: TransactionId) => state.people.filter(person => {
+    return person.transactions.includes(transactionId);
+});
 
 // Helper functions
 
@@ -234,6 +277,7 @@ export function getDisplayableTotal(total: number): string {
 
 const Actions = {
     addPerson, updateShare, updateTotal, updatePersonName, updateDescription, deletePerson, addShares,
+    deleteTransaction,
 };
 
 export const { Context, Provider } = createDataContext<BillState>(BillReducer, Actions, createInitialState());

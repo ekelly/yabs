@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { View, TextInput, StyleSheet, Animated } from "react-native";
 import { Context as BillContext, Person, getDisplayableTotal } from "../../context/BillContext";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
@@ -12,6 +12,10 @@ interface PersonRowProps {
 const PersonRow = ({ person, index }: PersonRowProps) => {
     const { state, actions: { updateShare, updatePersonName, deletePerson }} = useContext(BillContext);
     const [personShare, setPersonShare] = useState<string>(""+person.share);
+
+    useEffect(() => {
+        setPersonShare(""+person.share);
+    }, [person, state.transactions]);
 
     const swipeRenderer = (progress: Animated.AnimatedInterpolation,
                            dragAnimatedValue: Animated.AnimatedInterpolation) => {

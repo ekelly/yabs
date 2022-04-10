@@ -1,6 +1,5 @@
 
 export function textToNumber(text: string): number | null {
-    console.log("text to number: " + text);
     let float = parseFloat(text);
     if (isNaN(float)) {
         return null;

@@ -7,29 +7,21 @@ import PersonRow from "./PersonRow";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 
 const PersonListComponent = () => {
-    const [person, setPersonName] = useState("");
     const { state, actions: { addPerson }} = useContext(BillContext);
     const navigation = useNavigation();
 
     let peopleList = selectPeopleList(state);
 
-    console.log(state);
-
     const Header = () => <View style={styles.header}>
         <Text h4 style={{...styles.headerLabels, flex: 1 }}>Name</Text>
-        <Text h4 style={styles.headerLabels}>Shares</Text>
+        <Text h4 style={styles.headerLabels}>Contribution</Text>
     </View>;
 
     const Footer = () => <View style={styles.newPersonContainer}>
         <TouchableOpacity
             style={STYLES.button}
             onPress={() => {
-                if (person) {
-                    addPerson(person);
-                    setPersonName("");
-                } else {
-                    addPerson("Person " + (peopleList.length + 1));
-                }
+                addPerson("Person " + (peopleList.length + 1));
             }}
         >
             <Text style={STYLES.buttonText}>Add Person</Text>

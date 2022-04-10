@@ -31,10 +31,38 @@ Person:
 - Share
 
 
+______________________________________
+|                                    |
+|  Description               $ Cost  |
+|_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ |
+|                                    |
+|  Name                 Contribution |
+|------------------------------------|
+| Person 1                   10  [+] |
+| Person 2                    5  [+] |
+| ________                           |
+|                                    |
+|                                    |
+|                                    |
+|                                    |
+|                                    |
+|                                    |
+|                                    |
+|                                    |
+|                                    |
+|                                    |
+|                                    |
+|                                    |
+|____________________________________|
+|          |             |           |
+| History  |  Bill Split |  Saved    |
+___________|_____________|___________|
 
-
-
-
+- Tapping on the edit text adds a new person
+- Tapping on the 'plus' button next to contribution opens 'add dish'
+- Tapping on 'history' shows the history for this bill split
+- Tapping on 'saved' allows you to view previous saved 'totals'
+- Need to add a 'save' icon for the total
 
 
 

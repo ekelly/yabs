@@ -81,6 +81,9 @@ function internalUpdatePersonName(state: BillState, id: string, name: string): B
 }
 
 function internalUpdateShare(state: BillState, id: string, share: number): BillState {
+    if (share === 0) {
+        return state;
+    }
     let person = selectPerson(state, id);
     if (!person) {
         return state;
@@ -100,6 +103,9 @@ function internalUpdateShare(state: BillState, id: string, share: number): BillS
 }
 
 function internalAddShares(state: BillState, ids: Set<string>, share: number): BillState {
+    if (share === 0) {
+        return state;
+    }
     let adjustments: Adjustment[] = Array.from(ids).map<Adjustment>(id => {
         return { id, adjustAmount: share };
     });

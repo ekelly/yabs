@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
-import { Text, StyleSheet, Animated, FlatList } from "react-native";
+import { View, Text, StyleSheet, Animated, FlatList } from "react-native";
 import { Context as BillContext, Transaction, selectTransactionParticipants } from "../context/BillContext";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
+import { ROUNDED_CORNER_RADIUS } from "../Constants";
 
 interface TransactionRowProps {
     transaction: Transaction
@@ -29,14 +30,17 @@ const TransactionRow = ({ transaction }: TransactionRowProps) => {
     return (
         <GestureHandlerRootView>
             <Swipeable
-                renderRightActions={swipeRenderer} 
+                renderRightActions={swipeRenderer}
                 onSwipeableOpen={() => { deleteTransaction(transaction.id) }}>
                 <FlatList
                     data={transactionParticipants}
                     renderItem={({ item }) => {
                         let adjustment = transaction.adjustments.find(adjustment => adjustment.id === item.id);
                         if (adjustment) {
-                            return <Text>{item.name} - {adjustment.adjustAmount}</Text>
+                            let amt = adjustment.adjustAmount;
+                            return (<View style={styles.row}>
+                                    <Text style={styles.rowText}>{item.name}: {amt > 0 ? "+" : ""}{amt}</Text>
+                                </View>);
                         } else {
                             return null;
                         }
@@ -56,6 +60,15 @@ const styles = StyleSheet.create({
         height: '100%',
         width: "100%"
     },
+    row: {
+        padding: 10,
+        margin: 10,
+        borderWidth: 1,
+        borderRadius: ROUNDED_CORNER_RADIUS
+    },
+    rowText: {
+        fontSize: 20
+    }
 });
 
 export default TransactionRow;

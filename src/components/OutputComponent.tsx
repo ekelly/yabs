@@ -1,15 +1,26 @@
 import React, { useContext } from "react";
 import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { Text } from "react-native-elements";
-import { Context as BillContext, selectContributionPerPerson } from "../context/BillContext";
+import { Context as BillContext, selectContributionPerPerson, selectPeopleList, getTotalShares } from "../context/BillContext";
 import launchVenmo from "../api/venmo";
 import { ROUNDED_CORNER_RADIUS, BUTTON_COLOR } from "../Constants"
 import Share from "../components/Share";
 
-const OutputComponent = () => {
+interface OutputComponentProps {
+    shouldDisplay: boolean
+}
+
+const OutputComponent = ({ shouldDisplay }: OutputComponentProps) => {
+    if (!shouldDisplay) {
+        return null;
+    }
+
     const { state } = useContext(BillContext);
 
-    if (isNaN(state.total) || state.total === 0) {
+    let people = selectPeopleList(state);
+    let totalShares: number = getTotalShares(people);
+
+    if (isNaN(state.total) || state.total === 0 || totalShares === 0) {
         return null;
     }
 

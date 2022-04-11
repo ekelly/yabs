@@ -238,7 +238,7 @@ function getTotalInDollars(state: BillState): number {
 
 function calculateTotals(state: BillState): TotalContributionsList {
     let peopleList = selectPeopleList(state);
-    let totalShares: number = peopleList.map<number>(getShare).reduce<number>((acc, v) => acc + v, 0);
+    let totalShares: number = getTotalShares(peopleList);
 
     if (totalShares == 0) {
         return [];
@@ -279,6 +279,10 @@ export function getDisplayableTotal(total: number): string {
     } else {
         return (total / 100).toFixed(2);
     }
+}
+
+export function getTotalShares(peopleList: Person[]): number {
+    return peopleList.map<number>(getShare).reduce<number>((acc, v) => acc + v, 0);
 }
 
 const Actions = {

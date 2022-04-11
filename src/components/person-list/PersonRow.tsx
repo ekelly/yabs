@@ -9,10 +9,11 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 interface PersonRowProps {
     person: Person,
     index: number,
-    setNameInputRef: (nameInput: TextInput | null, id: string) => void
+    setNameInputRef: (nameInput: TextInput | null, id: string) => void,
+    setEditsInProgress: (editsInProgress: boolean) => void
 }
 
-const PersonRow = ({ person, index, setNameInputRef }: PersonRowProps) => {
+const PersonRow = ({ person, index, setNameInputRef, setEditsInProgress }: PersonRowProps) => {
     const navigation = useNavigation();
     const { state, actions: { updateShare, updatePersonName, deletePerson }} = useContext(BillContext);
     const [personShare, setPersonShare] = useState<string>(""+person.share);
@@ -73,14 +74,14 @@ const PersonRow = ({ person, index, setNameInputRef }: PersonRowProps) => {
                                 updateShare(person.id, parseFloat(text));
                             }
                         }}
+                        onFocus={() => setEditsInProgress(true) }
+                        onBlur={() => setEditsInProgress(false) }
                         placeholder="$$$$"
                     />
                     <Icon
                         name="tag-plus"
                         size={32}
                         onPress={() => {
-                            console.log("Adding a dish");
-                            console.log("Adding a dish for: " + person.id);
                             navigation.dispatch(CommonActions.navigate({
                                 name: "AddDish",
                                 params: {

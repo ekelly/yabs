@@ -11,12 +11,18 @@ type PersonSelectComponentProps = {
     onSelectionChanged: (selectedPeople: SelectedPeopleState) => void
     onDone: () => void,
     onCancel: () => void,
+    onTransactionDone: () => void,
     initiallySelected?: string,
     data: Person[]
 };
 
-const PersonSelectComponent = ({ data, onCancel, onDone, onSelectionChanged, initiallySelected }: PersonSelectComponentProps) => {
+const PersonSelectComponent = ({ data, onCancel, onDone, onSelectionChanged, onTransactionDone, initiallySelected }: PersonSelectComponentProps) => {
     const [selectedPeople, setSelectedPeople] = useState<SelectedPeopleState>({});
+
+    const initiallySelectedPeople: SelectedPeopleState = {};
+    if (initiallySelected) {
+        initiallySelectedPeople[initiallySelected] = true;
+    }
 
     useEffect(() => {
         if (initiallySelected) {
@@ -39,6 +45,14 @@ const PersonSelectComponent = ({ data, onCancel, onDone, onSelectionChanged, ini
             style={STYLES.button}
             onPress={onDone}>
             <Text style={STYLES.buttonText}>Done</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+            style={STYLES.button}
+            onPress={() => {
+                onTransactionDone();
+                setSelectedPeople(initiallySelectedPeople);
+            }}>
+            <Text style={STYLES.buttonText}>Add Another</Text>
         </TouchableOpacity>
     </View>;
 

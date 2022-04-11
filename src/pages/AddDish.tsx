@@ -52,6 +52,8 @@ const AddDish = ({ route }: AddDishProps) => {
     
     let peopleList = selectPeopleList(state);
 
+    let itemCostInput: TextInput | null;
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -62,6 +64,9 @@ const AddDish = ({ route }: AddDishProps) => {
                     style={styles.costInput}
                     keyboardType="phone-pad"
                     onChangeText={setItemCost}
+                    ref={(input) => {
+                        itemCostInput = input;
+                    }}
                     autoFocus
                 />
             </View>
@@ -72,7 +77,15 @@ const AddDish = ({ route }: AddDishProps) => {
                 onDone={() => {
                     addShares(getItemSharePerPerson(itemCost, selectedPeople), selectedPeople);
                     navigation.goBack();
-                }} 
+                }}
+                onTransactionDone={() => {
+                    addShares(getItemSharePerPerson(itemCost, selectedPeople), selectedPeople);
+                    setItemCost("");
+                    setSelectedPeople(initiallySelectedPeople);
+                    if (itemCostInput) {
+                        itemCostInput.focus();
+                    }
+                }}
                 onSelectionChanged={(selectedPeople) => {
                     let selectedPeopleSet = new Set<string>();
                     Object.entries(selectedPeople).forEach(value => {

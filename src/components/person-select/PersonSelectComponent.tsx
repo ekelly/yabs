@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { Text } from "react-native-elements";
 import { STYLES } from "../../Constants";
@@ -11,11 +11,21 @@ type PersonSelectComponentProps = {
     onSelectionChanged: (selectedPeople: SelectedPeopleState) => void
     onDone: () => void,
     onCancel: () => void,
+    initiallySelected?: string,
     data: Person[]
 };
 
-const PersonSelectComponent = ({ data, onCancel, onDone, onSelectionChanged }: PersonSelectComponentProps) => {
+const PersonSelectComponent = ({ data, onCancel, onDone, onSelectionChanged, initiallySelected }: PersonSelectComponentProps) => {
     const [selectedPeople, setSelectedPeople] = useState<SelectedPeopleState>({});
+
+    useEffect(() => {
+        if (initiallySelected) {
+            let newSelectedPeople = {
+                [initiallySelected]: true
+            };
+            setSelectedPeople(newSelectedPeople);
+        }
+    }, [])
 
     const Header = () => <View style={styles.header}></View>;
 

@@ -1,8 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Context as BillContext, Person, selectPeopleList } from "../context/BillContext";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import PersonSelectComponent from "../components/person-select/PersonSelectComponent";
-import { useNavigation } from "@react-navigation/native";
+import { Route, useNavigation } from "@react-navigation/native";
 
 type SelectedPeopleState = Set<string>;
 
@@ -29,11 +29,26 @@ function getSharePerPerson(itemCost: string,
     return singleDishShareList;
 }
 
-const AddDish = () => {
+interface AddDishParams {
+    id?: string
+}
+
+interface AddDishProps {
+    route: Route<"AddDish", AddDishParams>
+}
+
+const AddDish = ({ route }: AddDishProps) => {
     const { state, actions: { addShares } } = useContext(BillContext);
+    const { id } = route.params;
     const navigation = useNavigation();
     const [itemCost, setItemCost] = useState("");
-    const [selectedPeople, setSelectedPeople] = useState<SelectedPeopleState>(new Set<string>());
+
+    let initiallySelectedPeople = new Set<string>();
+    if (id) {
+        initiallySelectedPeople.add(id);
+    }
+
+    const [selectedPeople, setSelectedPeople] = useState<SelectedPeopleState>(initiallySelectedPeople);
     
     let peopleList = selectPeopleList(state);
 
@@ -47,10 +62,12 @@ const AddDish = () => {
                     style={styles.costInput}
                     keyboardType="phone-pad"
                     onChangeText={setItemCost}
+                    autoFocus
                 />
             </View>
             <PersonSelectComponent 
                 data={getSharePerPerson(itemCost, peopleList, selectedPeople)}
+                initiallySelected={id}
                 onCancel={() => { navigation.goBack() }} 
                 onDone={() => {
                     addShares(getItemSharePerPerson(itemCost, selectedPeople), selectedPeople);

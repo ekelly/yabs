@@ -1,15 +1,19 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, TextInput, StyleSheet, Animated } from "react-native";
+import { View, TextInput, StyleSheet, Animated, TouchableOpacity } from "react-native";
 import { Context as BillContext, Person, getDisplayableTotal } from "../../context/BillContext";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 import { isNumeric } from "../../utils/NumberUtils";
+import { useNavigation, CommonActions } from "@react-navigation/native";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface PersonRowProps {
     person: Person,
-    index: number
+    index: number,
+    setNameInputRef: (nameInput: TextInput | null, id: string) => void
 }
 
-const PersonRow = ({ person, index }: PersonRowProps) => {
+const PersonRow = ({ person, index, setNameInputRef }: PersonRowProps) => {
+    const navigation = useNavigation();
     const { state, actions: { updateShare, updatePersonName, deletePerson }} = useContext(BillContext);
     const [personShare, setPersonShare] = useState<string>(""+person.share);
 
@@ -31,7 +35,7 @@ const PersonRow = ({ person, index }: PersonRowProps) => {
         );
     };
 
-    let secondTextInput: TextInput | null;
+    let contributionTextInput: TextInput | null;
 
     return (
         <GestureHandlerRootView>
@@ -44,14 +48,17 @@ const PersonRow = ({ person, index }: PersonRowProps) => {
                         onChangeText={(text) => {
                             updatePersonName(person.id, text);
                         }}
-                        onEndEditing={() => { if (secondTextInput) { secondTextInput.focus(); }}}
+                        onEndEditing={() => { if (contributionTextInput) { contributionTextInput.focus(); }}}
                         value={person.name}
                         style={styles.personName}
+                        ref={(input) => {
+                            setNameInputRef(input, person.id);
+                        }}
                         selectTextOnFocus
                     />
                     <View style={{flex: 1}} />
                     <TextInput
-                        ref={(input) => { secondTextInput = input; }}
+                        ref={(input) => { contributionTextInput = input; }}
                         keyboardType="phone-pad"
                         style={styles.costInput}
                         value={personShare}
@@ -67,6 +74,20 @@ const PersonRow = ({ person, index }: PersonRowProps) => {
                             }
                         }}
                         placeholder="$$$$"
+                    />
+                    <Icon
+                        name="tag-plus"
+                        size={32}
+                        onPress={() => {
+                            console.log("Adding a dish");
+                            console.log("Adding a dish for: " + person.id);
+                            navigation.dispatch(CommonActions.navigate({
+                                name: "AddDish",
+                                params: {
+                                    id: person.id
+                                }
+                            }));
+                        }}
                     />
                 </View>
             </Swipeable>
@@ -87,6 +108,7 @@ const styles = StyleSheet.create({
         alignSelf: "flex-end",
         fontSize: 20,
         textAlign: "right",
+        marginRight: 10
     },
     swipedRow: {
         backgroundColor: '#b60000',

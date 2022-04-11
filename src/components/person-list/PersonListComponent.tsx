@@ -1,10 +1,9 @@
 import React, { useContext, useState } from "react";
-import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { View, StyleSheet, FlatList, TouchableOpacity, TextInput } from "react-native";
 import { Text } from "react-native-elements";
-import { STYLES } from "../../Constants";
 import { Context as BillContext, selectPeopleList } from "../../context/BillContext";
 import PersonRow from "./PersonRow";
-import { useNavigation, CommonActions } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 const PersonListComponent = () => {
     const { state, actions: { addPerson }} = useContext(BillContext);
@@ -19,34 +18,12 @@ const PersonListComponent = () => {
 
     const Footer = () => <View style={styles.newPersonContainer}>
         <TouchableOpacity
-            style={STYLES.button}
             onPress={() => {
                 addPerson("Person " + (peopleList.length + 1));
+                
             }}
         >
-            <Text style={STYLES.buttonText}>Add Person</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-            style={STYLES.button}
-            onPress={() => {
-                console.log("Adding a dish");
-                navigation.dispatch(CommonActions.navigate({
-                    name: "AddDish"
-                }));
-            }}
-        >
-            <Text style={STYLES.buttonText}>Add a Dish</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-            style={STYLES.button}
-            onPress={() => {
-                console.log("History");
-                navigation.dispatch(CommonActions.navigate({
-                    name: "History"
-                }));
-            }}
-        >
-            <Text style={STYLES.buttonText}>History</Text>
+            <Text style={styles.addPerson}>Add Person</Text>
         </TouchableOpacity>
     </View>;
 
@@ -54,7 +31,9 @@ const PersonListComponent = () => {
         <View style={styles.container}>
             <FlatList
                 renderItem={({item, index}) => {
-                    return <PersonRow person={item} index={index} />;
+                    return <PersonRow person={item} index={index} setNameInputRef={(nameInput, id) => {
+                        
+                    }} />;
                 }}
                 keyExtractor={(item) => item.id}
                 data={peopleList}
@@ -70,11 +49,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1
     },
-    newPersonContainer: {
-        marginVertical: 10,
-        flexDirection: "row",
-        justifyContent: "space-around"
-    },
     header: {
         flexDirection: "row",
         borderBottomColor: "grey",
@@ -88,6 +62,19 @@ const styles = StyleSheet.create({
     peopleList: {
         flexGrow: 0
     },
+    newPersonContainer: {
+        marginVertical: 10,
+        flexDirection: "row",
+    },
+    addPerson: {
+        fontStyle: "italic",
+        color: "grey",
+        minWidth: 150,
+        fontSize: 22,
+        textDecorationLine: "underline",
+        borderColor: "black",
+        borderWidth: 0,
+    }
 });
 
 export default PersonListComponent;

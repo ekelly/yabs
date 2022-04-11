@@ -10,6 +10,8 @@ const TotalBillComponent = () => {
         actions: { updateTotal, updateDescription } } = useContext(BillContext);
     const [stringTotal, setStringTotal] = useState<string>(getDisplayableTotal(total));
 
+    let textInput: TextInput | null;
+
     return (
         <View style={styles.container}>
             <TextInput style={styles.header}
@@ -17,6 +19,12 @@ const TotalBillComponent = () => {
                 value={description}
                 keyboardType="ascii-capable"
                 onChangeText={updateDescription}
+                onSubmitEditing={() => {
+                    if (textInput) {
+                        textInput.focus();
+                    }
+                }}
+                autoFocus
             />
             { stringTotal ? <Text style={styles.dollarSign}>$ </Text> : null }
             <TextInput
@@ -24,6 +32,9 @@ const TotalBillComponent = () => {
                 value={stringTotal}
                 style={styles.costInput}
                 keyboardType="phone-pad"
+                ref={(input) => {
+                    textInput = input;
+                }}
                 onChangeText={(text) => {
                     if (isNumeric(text)) {
                         setStringTotal(text);

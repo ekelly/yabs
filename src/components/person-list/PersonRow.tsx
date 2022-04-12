@@ -10,10 +10,12 @@ interface PersonRowProps {
     person: Person,
     index: number,
     setNameInputRef: (nameInput: TextInput | null, id: string) => void,
-    setEditsInProgress: (editsInProgress: boolean) => void
+    setContributionInputRef: (contributionInput: TextInput | null, id: string) => void,
+    setEditsInProgress: (editsInProgress: boolean) => void,
+    onEndEditing: (elementId: string) => void
 }
 
-const PersonRow = ({ person, index, setNameInputRef, setEditsInProgress }: PersonRowProps) => {
+const PersonRow = ({ person, index, setNameInputRef, setContributionInputRef, setEditsInProgress, onEndEditing }: PersonRowProps) => {
     const navigation = useNavigation();
     const { state, actions: { updateShare, updatePersonName, deletePerson }} = useContext(BillContext);
     const [personShare, setPersonShare] = useState<string>(""+person.share);
@@ -36,8 +38,6 @@ const PersonRow = ({ person, index, setNameInputRef, setEditsInProgress }: Perso
         );
     };
 
-    let contributionTextInput: TextInput | null;
-
     return (
         <GestureHandlerRootView>
             <Swipeable
@@ -49,7 +49,7 @@ const PersonRow = ({ person, index, setNameInputRef, setEditsInProgress }: Perso
                         onChangeText={(text) => {
                             updatePersonName(person.id, text);
                         }}
-                        onEndEditing={() => { if (contributionTextInput) { contributionTextInput.focus(); }}}
+                        onEndEditing={() => { onEndEditing(person.id); }}
                         value={person.name}
                         style={styles.personName}
                         ref={(input) => {
@@ -59,7 +59,9 @@ const PersonRow = ({ person, index, setNameInputRef, setEditsInProgress }: Perso
                     />
                     <View style={{flex: 1}} />
                     <TextInput
-                        ref={(input) => { contributionTextInput = input; }}
+                        ref={(input) => { 
+                            setContributionInputRef(input, person.id + "-share");
+                        }}
                         keyboardType="phone-pad"
                         style={styles.costInput}
                         value={personShare}
@@ -73,6 +75,7 @@ const PersonRow = ({ person, index, setNameInputRef, setEditsInProgress }: Perso
                             if (isNumeric(text)) {
                                 updateShare(person.id, parseFloat(text));
                             }
+                            onEndEditing(person.id + "-share");
                         }}
                         onFocus={() => setEditsInProgress(true) }
                         onBlur={() => setEditsInProgress(false) }

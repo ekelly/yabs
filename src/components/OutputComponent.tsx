@@ -7,10 +7,11 @@ import { ROUNDED_CORNER_RADIUS, BUTTON_COLOR } from "../Constants"
 import Share from "../components/Share";
 
 interface OutputComponentProps {
-    shouldDisplay: boolean
+    shouldDisplay: boolean,
+    title: string
 }
 
-const OutputComponent = ({ shouldDisplay }: OutputComponentProps) => {
+const OutputComponent = ({ shouldDisplay, title }: OutputComponentProps) => {
     if (!shouldDisplay) {
         return null;
     }
@@ -29,7 +30,7 @@ const OutputComponent = ({ shouldDisplay }: OutputComponentProps) => {
     return (
         <View style={styles.outputContainer}>
             <View style={styles.header}>
-                <Text h3>Totals </Text>
+                <Text h3>{title} </Text>
                 <Share state={state} style={styles.shareAllButton} hasTitle />
             </View>
             <FlatList 

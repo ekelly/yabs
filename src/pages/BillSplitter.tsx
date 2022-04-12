@@ -11,7 +11,7 @@ const BillSplitter = () => {
         <View style={styles.container}>
             <TotalBillComponent />
             <PersonListComponent setEditsInProgress={setEditsInProgress} />
-            <OutputComponent shouldDisplay={!contributionEditsAreInProgress} />
+            <OutputComponent title="Totals" shouldDisplay={!contributionEditsAreInProgress} />
         </View>
     );
 }

@@ -3,16 +3,31 @@ import { View, StyleSheet, FlatList, TouchableOpacity, TextInput } from "react-n
 import { Text } from "react-native-elements";
 import { Context as BillContext, selectPeopleList } from "../../context/BillContext";
 import PersonRow from "./PersonRow";
-import { useNavigation } from "@react-navigation/native";
 
 interface PersonListComponentProps {
     setEditsInProgress: (editsInProgress: boolean) => void
 }
 
+// Focus order: Name -> Contribution -> Name 2 -> Contribution 2 ...
+let inputList: Array<{ input: TextInput | null, elementId: string }> = [];
+const addToInputList = (elementId: string, input: TextInput | null) => {
+    inputList.push({ elementId, input });
+};
+function transitionToNextFocusElement(elementId: string) {
+    let indexOfElement = inputList.findIndex(value => elementId === value.elementId);
+    let indexOfNextElement = indexOfElement + 1;
+    if (indexOfNextElement < inputList.length) {
+        // Focus on the next element
+        let nextElement = inputList[indexOfNextElement].input;
+        if (nextElement) {
+            nextElement.focus();
+        }
+    }
+}
+
 const PersonListComponent = ({ setEditsInProgress }: PersonListComponentProps) => {
     const { state, actions: { addPerson }} = useContext(BillContext);
     const [editingInProgress, setEditingInProgress] = useState<Array<string>>([]);
-    const navigation = useNavigation();
 
     let peopleList = selectPeopleList(state);
 
@@ -49,8 +64,12 @@ const PersonListComponent = ({ setEditsInProgress }: PersonListComponentProps) =
                         person={item} 
                         index={index} 
                         setNameInputRef={(nameInput, id) => {
-                        
+                            addToInputList(id, nameInput);
                         }}
+                        setContributionInputRef={(contributionInput, id) => {
+                            addToInputList(id, contributionInput);
+                        }}
+                        onEndEditing={transitionToNextFocusElement}
                         setEditsInProgress={(isEditInProgress) => {
                             if (isEditInProgress) {
                                 setEditingInProgress([...editingInProgress, item.id]);

@@ -13,3 +13,7 @@ const re = /^[0-9]*\.?[0-9]{0,2}$/;
 export function isNumeric(text: string): boolean {
     return re.test(text);
 }
+
+export function roundToTwoDecimals(price: number) {
+    return +(price.toFixed(2));
+}

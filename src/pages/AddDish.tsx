@@ -3,6 +3,7 @@ import { Context as BillContext, Person, selectPeopleList } from "../context/Bil
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import PersonSelectComponent from "../components/person-select/PersonSelectComponent";
 import { Route, useNavigation } from "@react-navigation/native";
+import { roundToTwoDecimals } from "../utils/NumberUtils";
 
 type SelectedPeopleState = Set<string>;
 
@@ -12,12 +13,12 @@ function getItemSharePerPerson(itemCost: string,
     if (isNaN(itemCostPerPerson)) {
         itemCostPerPerson = 0;
     }
-    return itemCostPerPerson;
+    return roundToTwoDecimals(itemCostPerPerson);
 }
 
 function getSharePerPerson(itemCost: string,
                            peopleList: Person[],
-                           selectedPeople: SelectedPeopleState) {
+                           selectedPeople: SelectedPeopleState): Person[] {
     let itemCostPerPerson = getItemSharePerPerson(itemCost, selectedPeople);
     let singleDishShareList = peopleList.map<Person>((person) => {
         return {

@@ -90,6 +90,9 @@ function internalUpdateShare(state: BillState, id: string, share: number): BillS
     }
     let previousShare = person.share;
     let adjustAmount = share - previousShare;
+    if (adjustAmount === 0) {
+        return state;
+    }    
     let transaction: Transaction = { id: "t-" + uuidv4(), adjustments: [
         { id, adjustAmount }
     ]};

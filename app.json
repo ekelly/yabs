@@ -3,7 +3,7 @@
     "name": "yabs",
     "owner": "erick125",
     "slug": "yabs",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -21,11 +21,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "net.erickelly.yabs.ios",
-      "buildNumber": "0.1.0"
+      "buildNumber": "0.3.0"
     },
     "android": {
       "package": "net.erickelly.yabs.android",
-      "versionCode": 3,
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

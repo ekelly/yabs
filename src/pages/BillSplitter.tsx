@@ -1,3 +1,4 @@
+import { useNavigation, CommonActions } from "@react-navigation/native";
 import React, { useContext, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import OutputComponent from "../components/OutputComponent";
@@ -10,6 +11,7 @@ const BillSplitter = () => {
     const [contributionEditsAreInProgress, setEditsInProgress] = useState(true);
     const { state } = useContext(BillContext);
     const { state: { store }} = useContext(HistoryContext);
+    const navigation = useNavigation();
 
     return (
         <View style={styles.container}>
@@ -17,6 +19,9 @@ const BillSplitter = () => {
             <PersonListComponent setEditsInProgress={setEditsInProgress} />
             <OutputComponent title="Totals" shouldDisplay={!contributionEditsAreInProgress} onSave={() => {
                 store.saveState(state);
+                navigation.dispatch(CommonActions.navigate({
+                    name: "Saved"
+                }));
             }} data={state} style={{ maxHeight: '50%' }} />
         </View>
     );

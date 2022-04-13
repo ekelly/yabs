@@ -17,18 +17,17 @@ const share = async (text: string): Promise<boolean> => {
 };
 
 type ShareProps = {
-    state: BillState,
     hasTitle?: boolean,
-    itemId?: string,
-    style?: {}
+    style?: {},
+    shareText: string
 };
 
-const Share = ({ state, itemId, style, hasTitle }: ShareProps) => {
+const Share = ({ shareText, style, hasTitle }: ShareProps) => {
     return <Button 
         icon={{ name: Platform.OS === 'ios' ? "share-apple" : "share-google", size: 30, type: 'evilicon', color: "white" }}
         title={hasTitle ? "Share" : ""}
         onPress={() => {
-            let shareString = generateOutputString(state, itemId);
+            let shareString = shareText;
             share(shareString);
         }}
         buttonStyle={{ ...styles.copyIcon, ...style }}

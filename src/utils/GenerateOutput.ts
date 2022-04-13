@@ -1,8 +1,14 @@
-import { BillState, selectContributionPerPerson } from "../context/BillContext";
+import { BillState, Person, selectContributionPerPerson } from "../context/BillContext";
 
 const DEFAULT_DESCRIPTION = "our recent shared purchase";
 
-export const generateOutputString = (state: BillState, id?: string) => {
+interface OutputState {
+    total: number,
+    description: string,
+    people: Person[]
+}
+
+export const generateOutputString = (state: OutputState, id?: string) => {
     // If id is provided, we are outputting for a single person.
     // If it is not provided, we are outputting everyone
     let desc = state.description ? state.description : DEFAULT_DESCRIPTION;

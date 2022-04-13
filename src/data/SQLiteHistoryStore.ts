@@ -72,7 +72,7 @@ export class SQLiteHistoryStore implements HistoryStore {
         let db = this.#db;
         return new Promise<void>((resolve, reject) => {
             db.transaction((transaction) => {
-                // TODO: Execute SQL to insert bill
+                // Execute SQL to insert bill
                 let { id, total, description } = state;
                 transaction.executeSql(SQL_INSERT_BILL, [id, total, description], (tx, results) => {
                     console.log(`Inserted bill ${id}: ${[total, description].toString()}`);
@@ -82,7 +82,7 @@ export class SQLiteHistoryStore implements HistoryStore {
                     return true;
                 });
 
-                // TODO: Execute SQL to insert people
+                // Execute SQL to insert people
                 let totalContributionsList = selectContributionPerPerson(state);
                 totalContributionsList.forEach(contribution => {
                     let { name, personTotal } = contribution;
@@ -107,59 +107,60 @@ export class SQLiteHistoryStore implements HistoryStore {
         let db = this.#db;
         return new Promise<Array<HistoryItem>>((resolve, reject) => {
             let historyItems: Array<HistoryItem> = [];
-            db.transaction(async (transaction) => {
-                let bills = await new Promise<SQLite.SQLResultSet>((resolve, reject) => {
-                    transaction.executeSql(SQL_FETCH_BILLS, [], (tx, results) => {
-                        resolve(results);
-                    }, (tx, error) => {
-                        reject(`Fetching bills failed due to ${error.message}`);
-                        return true;
-                    });
-                });
-                let people = await new Promise<SQLite.SQLResultSet>((resolve, reject) => {
+            db.transaction((transaction) => {
+                transaction.executeSql(SQL_FETCH_BILLS, [], (tx, results) => {
+                    let bills = results;
                     transaction.executeSql(SQL_FETCH_PEOPLE, [], (tx, results) => {
-                        resolve(results);
+                        let people = results;
+
+                        let peopleMap: Map<string, Array<PersonRow>> = new Map();
+                        for (let j = 0; j < people.rows.length; j++) {
+                            let personRow: PersonRow = people.rows.item(j);
+                            let { bill_id } = personRow;
+                            if (!peopleMap.has(bill_id)) {
+                                peopleMap.set(bill_id, []);
+                            }
+                            peopleMap.get(bill_id)?.push(personRow);
+                        }
+
+                        for (let i = 0; i < bills.rows.length; i++) {
+                            let { id, description, timestamp, total }: BillRow = bills.rows.item(i);
+                            let people: Person[] | undefined;
+                            if (peopleMap.has(id)) {
+                                people = peopleMap.get(id)?.map<Person>((personRow) => {
+                                    return {
+                                        id: personRow[COLUMN_PERSON_ID],
+                                        name: personRow[COLUMN_PERSON_NAME],
+                                        share: personRow[COLUMN_CONTRIBUTION],
+                                        transactions: []
+                                    };
+                                });
+                            }
+                            if (!people) {
+                                people = [];
+                            }
+                            historyItems.push({
+                                id, description, total, timestamp, people
+                            });
+                        }
+
                     }, (tx, error) => {
+                        console.log(`Fetching people failed due to ${error.message}`);
                         reject(`Fetching people failed due to ${error.message}`);
                         return true;
                     });
+                }, (tx, error) => {
+                    console.log(`Fetching bills failed due to ${error.message}`);
+                    reject(`Fetching bills failed due to ${error.message}`);
+                    return true;
                 });
-
-                let peopleMap: Map<string, Array<PersonRow>> = new Map();
-                for (let j = 0; j < people.rows.length; j++) {
-                    let personRow: PersonRow = people.rows.item(j);
-                    let { bill_id } = personRow;
-                    if (!peopleMap.has(bill_id)) {
-                        peopleMap.set(bill_id, []);
-                    }
-                    peopleMap.get(bill_id)?.push(personRow);
-                }
-
-                for (let i = 0; i < bills.rows.length; i++) {
-                    let { id, description, timestamp, total }: BillRow = bills.rows.item(i);
-                    let people: Person[] | undefined;
-                    if (peopleMap.has(id)) {
-                        people = peopleMap.get(id)?.map<Person>((personRow) => {
-                            return {
-                                id: personRow[COLUMN_PERSON_ID],
-                                name: personRow[COLUMN_PERSON_NAME],
-                                share: personRow[COLUMN_CONTRIBUTION],
-                                transactions: []
-                            };
-                        });
-                    }
-                    if (!people) {
-                        people = [];
-                    }
-                    historyItems.push({
-                        id, description, total, timestamp, people
-                    });
-                }
             }, (error) => {
+                console.log(`Fetching history failed. ${error.message}`);
                 reject(`Fetching history failed due to ${error.message}`);
             }, () => {
+                console.log(`Fetched history. Items: ${historyItems.length}`);
                 resolve(historyItems);
-            })
+            });
         });
     }
     

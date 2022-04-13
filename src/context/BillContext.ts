@@ -212,7 +212,7 @@ function deleteTransaction(dispatch: React.Dispatch<Action>) {
 
 export const selectContributionPerPerson = calculateTotals;
 
-export const selectPeopleList = (state: BillState) => Object.entries(state.people).map(it => it[1]);
+export const selectPeopleList = (state: { people: Person[] }) => Object.entries(state.people).map(it => it[1]);
 
 export const selectPerson = (state: BillState, id: string) => state.people.find(person => person.id === id);
 
@@ -236,11 +236,11 @@ function getShare(person: Person): number {
     return person.share;
 }
 
-function getTotalInDollars(state: BillState): number { 
+function getTotalInDollars(state: { total: number }): number { 
     return state.total / 100;
 };
 
-function calculateTotals(state: BillState): TotalContributionsList {
+function calculateTotals(state: { people: Person[], total: number }): TotalContributionsList {
     let peopleList = selectPeopleList(state);
     let totalShares: number = getTotalShares(peopleList);
 

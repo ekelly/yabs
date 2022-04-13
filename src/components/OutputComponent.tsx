@@ -1,44 +1,50 @@
 import React, { useContext } from "react";
-import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { View, StyleSheet, FlatList, TouchableOpacity, ViewStyle } from "react-native";
 import { Button, Text } from "react-native-elements";
-import { Context as BillContext, selectContributionPerPerson, selectPeopleList, getTotalShares } from "../context/BillContext";
+import { selectContributionPerPerson, selectPeopleList, getTotalShares, BillState } from "../context/BillContext";
 import { Context as HistoryContext } from "../context/HistoryContext";
 import launchVenmo from "../api/venmo";
 import { ROUNDED_CORNER_RADIUS, BUTTON_COLOR } from "../Constants"
 import Share from "../components/Share";
+import { HistoryItem } from "../data/HistoryStore";
+import { generateOutputString } from "../utils/GenerateOutput";
+
+type OutputData = BillState | HistoryItem;
 
 interface OutputComponentProps {
     shouldDisplay: boolean,
-    title: string
+    onSave?: () => void,
+    title: string,
+    data: OutputData,
+    style?: ViewStyle
 }
 
-const OutputComponent = ({ shouldDisplay, title }: OutputComponentProps) => {
+const OutputComponent = ({ shouldDisplay, onSave, title, data, style }: OutputComponentProps) => {
     if (!shouldDisplay) {
         return null;
     }
 
-    const { state } = useContext(BillContext);
     const { state: { store } } = useContext(HistoryContext);
 
-    let people = selectPeopleList(state);
+    let people = selectPeopleList(data);
     let totalShares: number = getTotalShares(people);
 
-    if (isNaN(state.total) || state.total === 0 || totalShares === 0) {
+    if (isNaN(data.total) || data.total === 0 || totalShares === 0) {
         return null;
     }
 
-    let peopleList = selectContributionPerPerson(state);
+    let peopleList = selectContributionPerPerson(data);
 
     return (
-        <View style={styles.outputContainer}>
+        <View style={{ ...styles.outputContainer, ...style }}>
             <View style={styles.header}>
                 <Text h3>{title} </Text>
-                <Share state={state} style={styles.shareAllButton} hasTitle />
-                <Button
+                <Share shareText={generateOutputString(data)} style={styles.shareAllButton} hasTitle />
+                { onSave ? <Button
                     icon={{ name: "save", size: 30, type: 'fontawesome', color: "white" }}
                     title={""}
-                    onPress={() => { store.saveState(state); }}
-                />
+                    onPress={onSave}
+                /> : null }
             </View>
             <FlatList 
                 renderItem={({item}) => {
@@ -47,13 +53,13 @@ const OutputComponent = ({ shouldDisplay, title }: OutputComponentProps) => {
                             <Text style={styles.personName}>{item.name} - ${item.personTotal}</Text>
                             <TouchableOpacity
                                 onPress={() => {
-                                    launchVenmo(parseFloat(item.personTotal), state.description);
+                                    launchVenmo(parseFloat(item.personTotal), data.description);
                                 }}
                                 style={styles.venmoButton}
                             >
                                 <Text style={styles.venmoText}>Venmo</Text>
                             </TouchableOpacity> 
-                            <Share itemId={item.id} state={state} style={{padding: 8}} />
+                            <Share shareText={generateOutputString(data, item.id)} style={{padding: 8}} />
                         </View>
                     );
                 }}
@@ -71,8 +77,7 @@ const styles = StyleSheet.create({
     outputContainer: {
         backgroundColor: "#dddddd",
         borderRadius: ROUNDED_CORNER_RADIUS,
-        padding: 10,
-        maxHeight: '50%'
+        padding: 10
     },
     person: {
         flexDirection: "row",

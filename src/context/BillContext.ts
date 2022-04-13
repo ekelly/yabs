@@ -13,6 +13,7 @@ export type Person = {
 };
 
 export type BillState = {
+    id: string, // An identifier corresponding to this bill
     description: string,
     total: number, // The total cost of the bill, including tax & tip in pennies
     people: Array<Person> // The people involved in the bill splitting
@@ -271,7 +272,7 @@ function createInitialState(): BillState {
     let person1 = createPerson("Person 1");
     let person2 = createPerson("Person 2");
     let people = [ person1, person2 ];
-    return { description: "", total: 0, people: people, transactions: [] };
+    return { id: "b-"+uuidv4(), description: "", total: 0, people: people, transactions: [] };
 }
 
 // Exports

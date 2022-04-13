@@ -5,6 +5,7 @@ import AddDish from "./src/pages/AddDish";
 import History from "./src/pages/History";
 import Saved from "./src/pages/Saved";
 import { Provider as BillProvider } from "./src/context/BillContext"
+import { Provider as HistoryProvider } from "./src/context/HistoryContext"
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
@@ -66,11 +67,13 @@ const TabNavigatorComponent = () => {
 const RootStackScreen = () => {
   return (
     <BillProvider>
-      <NavigationContainer>
-        <SafeAreaView style={{flex: 1}}>
-          <TabNavigatorComponent />
-        </SafeAreaView>
-      </NavigationContainer>
+      <HistoryProvider>
+        <NavigationContainer>
+          <SafeAreaView style={{flex: 1}}>
+            <TabNavigatorComponent />
+          </SafeAreaView>
+        </NavigationContainer>
+      </HistoryProvider>
     </BillProvider>
   );
 }

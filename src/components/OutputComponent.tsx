@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
 import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
-import { Text } from "react-native-elements";
+import { Button, Text } from "react-native-elements";
 import { Context as BillContext, selectContributionPerPerson, selectPeopleList, getTotalShares } from "../context/BillContext";
+import { Context as HistoryContext } from "../context/HistoryContext";
 import launchVenmo from "../api/venmo";
 import { ROUNDED_CORNER_RADIUS, BUTTON_COLOR } from "../Constants"
 import Share from "../components/Share";
@@ -17,6 +18,7 @@ const OutputComponent = ({ shouldDisplay, title }: OutputComponentProps) => {
     }
 
     const { state } = useContext(BillContext);
+    const { state: { store } } = useContext(HistoryContext);
 
     let people = selectPeopleList(state);
     let totalShares: number = getTotalShares(people);
@@ -32,6 +34,11 @@ const OutputComponent = ({ shouldDisplay, title }: OutputComponentProps) => {
             <View style={styles.header}>
                 <Text h3>{title} </Text>
                 <Share state={state} style={styles.shareAllButton} hasTitle />
+                <Button
+                    icon={{ name: "save", size: 30, type: 'fontawesome', color: "white" }}
+                    title={""}
+                    onPress={() => { store.saveState(state); }}
+                />
             </View>
             <FlatList 
                 renderItem={({item}) => {

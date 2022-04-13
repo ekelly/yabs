@@ -5,6 +5,7 @@ import { HistoryItem } from "../data/HistoryStore";
 import OutputComponent from "../components/OutputComponent";
 import { timestampToDate } from "../utils/DateUtils";
 import { ROUNDED_CORNER_RADIUS } from "../Constants";
+import SwipeDeleteComponent from "../components/SwipeDeleteComponent";
 
 const Saved = () => {
     const { state: { store } } = useContext(HistoryContext);
@@ -23,7 +24,7 @@ const Saved = () => {
             }
             setFetchedHistory(true);
         })();
-    }, []);
+    }, [fetchedHistory]);
 
     function generateOutput() {
         return (
@@ -42,10 +43,15 @@ const Saved = () => {
                         let timestamp = timestampToDate(item.timestamp).toDateString();
                         let description = item.description ? item.description : "Totals";
                         return (
-                            <View style={styles.row}>
-                                <OutputComponent shouldDisplay title={description} data={item} style={styles.output} />
-                                <Text style={{ alignSelf: "flex-end", marginRight: 10 }}>{timestamp}</Text>
-                            </View>
+                            <SwipeDeleteComponent onDelete={() => {
+                                store.deleteItem(item.id);
+                                setFetchedHistory(false);
+                            }}>
+                                <View style={styles.row}>
+                                    <OutputComponent shouldDisplay title={description} data={item} style={styles.output} />
+                                    <Text style={{ alignSelf: "flex-end", marginRight: 10 }}>{timestamp}</Text>
+                                </View>
+                            </SwipeDeleteComponent>
                         );
                     }}
                     keyExtractor={(item) => item.id }

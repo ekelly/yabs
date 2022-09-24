@@ -32,9 +32,11 @@ const PersonRow = ({ person, index, setNameInputRef, setContributionInputRef, se
                     onChangeText={(text) => {
                         updatePersonName(person.id, text);
                     }}
-                    onEndEditing={() => { onEndEditing(person.id); }}
+                    onSubmitEditing={() => { onEndEditing(person.id); }}
                     value={person.name}
                     style={styles.personName}
+                    onFocus={() => setEditsInProgress(true) }
+                    onBlur={() => setEditsInProgress(false) }
                     ref={(input) => {
                         setNameInputRef(input, person.id);
                     }}
@@ -54,7 +56,7 @@ const PersonRow = ({ person, index, setNameInputRef, setContributionInputRef, se
                             setPersonShare(text);
                         }
                     }}
-                    onEndEditing={({ nativeEvent: { text }}) => {
+                    onSubmitEditing={({ nativeEvent: { text }}) => {
                         if (isNumeric(text) && !isNaN(parseFloat(text))) {
                             updateShare(person.id, parseFloat(text));
                         } else if ("" === text) {

@@ -50,7 +50,7 @@ const PersonListComponent = ({ setEditsInProgress }: PersonListComponentProps) =
         if (editingInProgress.length > 0) {
             setEditsInProgress(true);
         } else {
-            // TODO: We need to account for the delay if switching between different
+            // TODO: We need to account for the delay of switching between different
             // text inputs so that the totals box doesn't flicker
             setEditsInProgress(editingInProgress.length > 0);
         }

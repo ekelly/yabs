@@ -5,7 +5,8 @@ import { Context as BillContext, selectPeopleList } from "../../context/BillCont
 import PersonRow from "./PersonRow";
 
 interface PersonListComponentProps {
-    setEditsInProgress: (editsInProgress: boolean) => void
+    setEditsInProgress: (editsInProgress: boolean) => void,
+    setFirstPersonNameRef: (firstPersonName: TextInput | null) => void,
 }
 
 // Focus order: Name -> Contribution -> Name 2 -> Contribution 2 ...
@@ -25,7 +26,7 @@ function transitionToNextFocusElement(elementId: string) {
     }
 }
 
-const PersonListComponent = ({ setEditsInProgress }: PersonListComponentProps) => {
+const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: PersonListComponentProps) => {
     const { state, actions: { addPerson }} = useContext(BillContext);
     const [editingInProgress, setEditingInProgress] = useState<Array<string>>([]);
 
@@ -65,6 +66,7 @@ const PersonListComponent = ({ setEditsInProgress }: PersonListComponentProps) =
                         index={index} 
                         setNameInputRef={(nameInput, id) => {
                             addToInputList(id, nameInput);
+                            if (index === 0) setFirstPersonNameRef(nameInput);
                         }}
                         setContributionInputRef={(contributionInput, id) => {
                             addToInputList(id, contributionInput);

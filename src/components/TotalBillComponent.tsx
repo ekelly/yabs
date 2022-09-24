@@ -5,7 +5,11 @@ import { Context as BillContext, getDisplayableTotal } from "../context/BillCont
 import { ROUNDED_CORNER_RADIUS } from "../Constants";
 import { isNumeric, textToNumber } from "../utils/NumberUtils";
 
-const TotalBillComponent = () => {
+interface TotalBillComponentProps {
+    firstNameInput: TextInput | null,
+}
+
+const TotalBillComponent = ({ firstNameInput }: TotalBillComponentProps) => {
     const { state: { total, description }, 
         actions: { updateTotal, updateDescription } } = useContext(BillContext);
     const [stringTotal, setStringTotal] = useState<string>(getDisplayableTotal(total));
@@ -46,6 +50,9 @@ const TotalBillComponent = () => {
                         updateTotal(num);
                     } else {
                         updateTotal(0);
+                    }
+                    if (firstNameInput !== null) {
+                        firstNameInput.focus();
                     }
                 }}
                 showSoftInputOnFocus

@@ -1,10 +1,10 @@
 import { useNavigation, CommonActions } from "@react-navigation/native";
-import React, { useContext, useState } from "react";
-import { View, StyleSheet, TextInput } from "react-native";
+import React, { useContext, useState, useEffect, useCallback } from "react";
+import { View, StyleSheet, TextInput, AppState } from "react-native";
 import OutputComponent from "../components/OutputComponent";
 import PersonListComponent from "../components/person-list/PersonListComponent";
 import TotalBillComponent from "../components/TotalBillComponent";
-import { Context as BillContext } from "../context/BillContext";
+import { BillState, Context as BillContext } from "../context/BillContext";
 import { Context as HistoryContext } from "../context/HistoryContext";
 
 const BillSplitter = () => {
@@ -13,6 +13,22 @@ const BillSplitter = () => {
     const { state } = useContext(BillContext);
     const { state: { store }} = useContext(HistoryContext);
     const navigation = useNavigation();
+    const saveState = useCallback(() => {
+        console.log("Id: " + state.id + " total: " + state.total);
+        store.saveState(state);
+      }, [state]);
+
+    // Save to the history view automatically whenever the app moves to the background
+    useEffect(() => {
+        const subscription = AppState.addEventListener("change", nextAppState => {
+            if (nextAppState.match(/inactive|background/)) {
+                saveState();
+            }
+        });
+        return () => {
+          subscription.remove();
+        };
+      }, [saveState]);
 
     return (
         <View style={styles.container}>

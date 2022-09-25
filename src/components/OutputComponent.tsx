@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 import { View, StyleSheet, FlatList, TouchableOpacity, ViewStyle } from "react-native";
 import { Button, Text } from "react-native-elements";
 import { selectContributionPerPerson, selectPeopleList, getTotalShares, BillState } from "../context/BillContext";
-import { Context as HistoryContext } from "../context/HistoryContext";
 import launchVenmo from "../api/venmo";
 import { ROUNDED_CORNER_RADIUS, BUTTON_COLOR } from "../Constants"
 import Share from "../components/Share";
@@ -23,8 +22,6 @@ const OutputComponent = ({ shouldDisplay, onSave, title, data, style }: OutputCo
     if (!shouldDisplay) {
         return null;
     }
-
-    const { state: { store } } = useContext(HistoryContext);
 
     let people = selectPeopleList(data);
     let totalShares: number = getTotalShares(people);

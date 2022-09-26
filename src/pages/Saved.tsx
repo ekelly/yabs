@@ -5,16 +5,17 @@ import { HistoryItem } from "../data/HistoryStore";
 import OutputComponent from "../components/OutputComponent";
 import { timestampToDate } from "../utils/DateUtils";
 import { ROUNDED_CORNER_RADIUS } from "../Constants";
+import { useNavigation } from "@react-navigation/native";
 import SwipeDeleteComponent from "../components/SwipeDeleteComponent";
 
 const Saved = () => {
     const { state: { store } } = useContext(HistoryContext);
     const [history, setHistory] = useState<Array<HistoryItem>>([]);
     const [fetchedHistory, setFetchedHistory] = useState<boolean>(false);
+    const navigation = useNavigation();
 
-    useEffect(() => {
-        (async () => {
-            console.log("Loading history");
+    const fetchHistory = async () => {
+        console.log("Loading history");
             let historyItems = await store.fetchHistory();
             if (historyItems) {
                 console.log("Loaded history: " + historyItems.length);
@@ -23,7 +24,11 @@ const Saved = () => {
                 setHistory([]);
             }
             setFetchedHistory(true);
-        })();
+    };
+
+    useEffect(() => {
+        navigation.addListener('focus', fetchHistory);
+        fetchHistory();
     }, [fetchedHistory]);
 
     function generateOutput() {

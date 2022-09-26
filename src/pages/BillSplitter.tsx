@@ -20,6 +20,7 @@ const BillSplitter = () => {
 
     // Save to the history view automatically whenever the app moves to the background
     useEffect(() => {
+        navigation.addListener('blur', saveState);
         const subscription = AppState.addEventListener("change", nextAppState => {
             if (nextAppState.match(/inactive|background/)) {
                 saveState();

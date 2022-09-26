@@ -12,13 +12,12 @@ type OutputData = BillState | HistoryItem;
 
 interface OutputComponentProps {
     shouldDisplay: boolean,
-    onSave?: () => void,
     title: string,
     data: OutputData,
     style?: ViewStyle
 }
 
-const OutputComponent = ({ shouldDisplay, onSave, title, data, style }: OutputComponentProps) => {
+const OutputComponent = ({ shouldDisplay, title, data, style }: OutputComponentProps) => {
     if (!shouldDisplay) {
         return null;
     }
@@ -37,17 +36,12 @@ const OutputComponent = ({ shouldDisplay, onSave, title, data, style }: OutputCo
             <View style={styles.header}>
                 <Text h3>{title} </Text>
                 <Share shareText={generateOutputString(data)} style={styles.shareAllButton} hasTitle />
-                { onSave ? <Button
-                    icon={{ name: "save", size: 30, type: 'fontawesome', color: "white" }}
-                    title={""}
-                    onPress={onSave}
-                /> : null }
             </View>
             <FlatList 
                 renderItem={({item}) => {
                     return (
                         <View style={styles.person}>
-                            <Text style={styles.personName}>{item.name} - ${item.personTotal}</Text>
+                            <Text style={styles.personName}>{item.name}: ${item.personTotal}</Text>
                             <TouchableOpacity
                                 onPress={() => {
                                     launchVenmo(parseFloat(item.personTotal), data.description);
@@ -103,7 +97,7 @@ const styles = StyleSheet.create({
     },
     shareAllButton: {
         paddingLeft: 0,
-        backgroundColor: "purple"
+        backgroundColor: "purple",
     }
 });
 

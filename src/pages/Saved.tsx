@@ -7,6 +7,7 @@ import { timestampToDate } from "../utils/DateUtils";
 import { ROUNDED_CORNER_RADIUS } from "../Constants";
 import { useNavigation } from "@react-navigation/native";
 import SwipeDeleteComponent from "../components/SwipeDeleteComponent";
+import { penniesToOutput } from "../utils/PriceUtils";
 
 const Saved = () => {
     const { state: { store } } = useContext(HistoryContext);
@@ -46,7 +47,7 @@ const Saved = () => {
                     data={history}
                     renderItem={({ item }) => {
                         let timestamp = timestampToDate(item.timestamp).toDateString();
-                        let description = item.description ? item.description : "Totals";
+                        let description = `${item.description ? item.description : "Total"}: ${penniesToOutput(item.total)}`;
                         return (
                             <SwipeDeleteComponent onDelete={() => {
                                 store.deleteItem(item.id);

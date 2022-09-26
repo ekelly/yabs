@@ -35,16 +35,11 @@ const BillSplitter = () => {
         <View style={styles.container}>
             <TotalBillComponent firstNameInput={firstPersonNameRef} />
             <PersonListComponent setEditsInProgress={setEditsInProgress} setFirstPersonNameRef={setFirstPersonNameRef} />
-            <OutputComponent title="Totals" shouldDisplay={!contributionEditsAreInProgress} onSave={() => {
-                store.saveState(state);
-                navigation.dispatch(CommonActions.navigate({
-                    name: "Saved"
-                }));
-            }} data={state} style={{ maxHeight: '50%' }} />
+            <OutputComponent title="Totals" shouldDisplay={!contributionEditsAreInProgress} data={state} style={{ maxHeight: '50%' }} />
         </View>
     );
 }
-  
+
 const styles = StyleSheet.create({
     container: {
         margin: 10,

@@ -14,10 +14,11 @@ interface OutputComponentProps {
     shouldDisplay: boolean,
     title: string,
     data: OutputData,
-    style?: ViewStyle
+    style?: ViewStyle,
+    hasSave?: boolean
 }
 
-const OutputComponent = ({ shouldDisplay, title, data, style }: OutputComponentProps) => {
+const OutputComponent = ({ shouldDisplay, title, data, style, hasSave }: OutputComponentProps) => {
     if (!shouldDisplay) {
         return null;
     }
@@ -36,6 +37,11 @@ const OutputComponent = ({ shouldDisplay, title, data, style }: OutputComponentP
             <View style={styles.header}>
                 <Text h3 style={styles.headerText}>{title} </Text>
                 <Share shareText={generateOutputString(data)} style={styles.shareAllButton} hasTitle />
+                { hasSave ? <Button
+                    icon={{ name: "save", size: 30, type: 'fontawesome', color: "white" }}
+                    title={""}
+                    onPress={() => {  }}
+                /> : null }
             </View>
             <FlatList 
                 renderItem={({item}) => {

@@ -1,16 +1,19 @@
-import { useNavigation, CommonActions } from "@react-navigation/native";
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import { useNavigation } from "@react-navigation/native";
+import React, { useContext, useState, useEffect, useCallback, useRef } from "react";
 import { View, StyleSheet, TextInput, AppState } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 import OutputComponent from "../components/OutputComponent";
 import PersonListComponent from "../components/person-list/PersonListComponent";
+import SwipeComponent from "../components/SwipeComponent";
 import TotalBillComponent from "../components/TotalBillComponent";
-import { BillState, Context as BillContext } from "../context/BillContext";
+import { Context as BillContext } from "../context/BillContext";
 import { Context as HistoryContext } from "../context/HistoryContext";
 
 const BillSplitter = () => {
     const [contributionEditsAreInProgress, setEditsInProgress] = useState(true);
     const [firstPersonNameRef, setFirstPersonNameRef] = useState<TextInput|null>(null);
-    const { state } = useContext(BillContext);
+    const outputSwipeableRef = useRef<Swipeable>(null);
+    const { state, actions: { clearAll } } = useContext(BillContext);
     const { state: { store }} = useContext(HistoryContext);
     const navigation = useNavigation();
     const saveState = useCallback(() => {
@@ -31,11 +34,28 @@ const BillSplitter = () => {
         };
       }, [saveState]);
 
+    const saveAndClear = useCallback(() => {
+        saveState();
+        clearAll();
+        outputSwipeableRef.current?.close();
+        setEditsInProgress(false);
+    }, [outputSwipeableRef, setEditsInProgress]);
+
     return (
         <View style={styles.container}>
             <TotalBillComponent firstNameInput={firstPersonNameRef} />
-            <PersonListComponent setEditsInProgress={setEditsInProgress} setFirstPersonNameRef={setFirstPersonNameRef} />
-            <OutputComponent title="Totals" shouldDisplay={!contributionEditsAreInProgress} data={state} style={{ maxHeight: '50%' }} />
+            <PersonListComponent 
+                setEditsInProgress={setEditsInProgress} 
+                setFirstPersonNameRef={setFirstPersonNameRef} />
+            <SwipeComponent 
+                    text="Save" 
+                    color="#00f600" 
+                    onSwipe={saveAndClear} 
+                    swipeDirection="right" 
+                    style={{ maxHeight: '50%' }} 
+                    setRef={outputSwipeableRef}>
+                <OutputComponent title="Totals" shouldDisplay={!contributionEditsAreInProgress} data={state} />
+            </SwipeComponent>
         </View>
     );
 }

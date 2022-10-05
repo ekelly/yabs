@@ -16,6 +16,7 @@ export type BillState = {
     id: string, // An identifier corresponding to this bill
     description: string,
     total: number, // The total cost of the bill, including tax & tip in pennies
+    stringTotal: string, // The total cost of the bill, in string format. This is for rendering on the bill input page
     people: Array<Person> // The people involved in the bill splitting
     transactions: Array<Transaction> // The list of transactions
 };
@@ -56,10 +57,14 @@ const BillReducer = (state: BillState, action: Action): BillState => {
             return internalAddShares(state, action.payload.ids, action.payload.share);
         case 'update_total':
             return internalUpdateTotal(state, action.payload.total);
+        case 'update_string_total':
+            return internalUpdateStringTotal(state, action.payload.total);
         case 'update_description':
             return internalUpdateDescription(state, action.payload.description);
         case 'delete_transaction':
             return internalDeleteTransaction(state, action.payload.id);
+        case 'clear_all':
+            return internalClearAll(state);
         default:
             return state;
     }
@@ -129,13 +134,17 @@ function internalUpdateTotal(state: BillState, total: number): BillState {
     return { ...state, total };
 }
 
+function internalUpdateStringTotal(state: BillState, stringTotal: string): BillState {
+    return { ...state, stringTotal };
+}
+
 function internalUpdateDescription(state: BillState, description: string): BillState {
     return { ...state, description };
 }
 
 function internalDeleteTransaction(state: BillState, id: string): BillState {
     let transactionToDelete = state.transactions.find(transaction => transaction.id === id);
-    return { 
+    return {
         ...state,
         people: [ ...state.people ].map<Person>(person => {
             let share = person.share;
@@ -155,6 +164,10 @@ function internalDeleteTransaction(state: BillState, id: string): BillState {
     };
 }
 
+function internalClearAll(state: BillState): BillState {
+    return createInitialState();
+}
+
 // Actions
 
 function addPerson(dispatch: React.Dispatch<Action>) {
@@ -172,6 +185,12 @@ function updatePersonName(dispatch: React.Dispatch<Action>) {
 function updateTotal(dispatch: React.Dispatch<Action>) {
     return (total: number) => {
         dispatch({ type: 'update_total', payload: { total }});
+    };
+};
+
+function updateStringTotal(dispatch: React.Dispatch<Action>) {
+    return (total: string) => {
+        dispatch({ type: 'update_string_total', payload: { total }});
     };
 };
 
@@ -204,6 +223,12 @@ function deleteTransaction(dispatch: React.Dispatch<Action>) {
         dispatch({ type: 'delete_transaction', payload: { id } });
     };
 };
+
+function clearAll(dispatch: React.Dispatch<Action>) {
+    return () => {
+        dispatch({ type: 'clear_all', payload: {} });
+    }
+}
 
 // Selectors
 
@@ -269,7 +294,7 @@ function createInitialState(): BillState {
     let person1 = createPerson("Person 1");
     let person2 = createPerson("Person 2");
     let people = [ person1, person2 ];
-    return { id: "b-"+uuidv4(), description: "", total: 0, people: people, transactions: [] };
+    return { id: "b-"+uuidv4(), description: "", total: 0, people: people, transactions: [], stringTotal: "" };
 }
 
 // Exports
@@ -288,7 +313,7 @@ export function getTotalShares(peopleList: Person[]): number {
 
 const Actions = {
     addPerson, updateShare, updateTotal, updatePersonName, updateDescription, deletePerson, addShares,
-    deleteTransaction,
+    deleteTransaction, clearAll, updateStringTotal
 };
 
 export const { Context, Provider } = createDataContext<BillState>(BillReducer, Actions, createInitialState());

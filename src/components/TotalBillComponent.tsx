@@ -1,7 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Text } from "react-native-elements";
-import { Context as BillContext, getDisplayableTotal } from "../context/BillContext";
+import { Context as BillContext } from "../context/BillContext";
 import { ROUNDED_CORNER_RADIUS } from "../Constants";
 import { isNumeric, textToNumber } from "../utils/NumberUtils";
 
@@ -10,9 +10,8 @@ interface TotalBillComponentProps {
 }
 
 const TotalBillComponent = ({ firstNameInput }: TotalBillComponentProps) => {
-    const { state: { total, description }, 
-        actions: { updateTotal, updateDescription } } = useContext(BillContext);
-    const [stringTotal, setStringTotal] = useState<string>(getDisplayableTotal(total));
+    const { state: { stringTotal, description }, 
+        actions: { updateTotal, updateDescription, updateStringTotal } } = useContext(BillContext);
 
     let textInput: TextInput | null;
 
@@ -41,7 +40,7 @@ const TotalBillComponent = ({ firstNameInput }: TotalBillComponentProps) => {
                 }}
                 onChangeText={(text) => {
                     if (isNumeric(text)) {
-                        setStringTotal(text);
+                        updateStringTotal(text);
                     }
                 }}
                 onEndEditing={({ nativeEvent: { text }}) => {

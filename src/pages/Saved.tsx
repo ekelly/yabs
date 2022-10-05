@@ -1,13 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context as HistoryContext } from "../context/HistoryContext";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, Alert } from "react-native";
 import { HistoryItem } from "../data/HistoryStore";
 import OutputComponent from "../components/OutputComponent";
 import { timestampToDate } from "../utils/DateUtils";
-import { ROUNDED_CORNER_RADIUS } from "../Constants";
+import { MARGIN, ROUNDED_CORNER_RADIUS, STYLES } from "../Constants";
 import { useNavigation } from "@react-navigation/native";
 import SwipeDeleteComponent from "../components/SwipeDeleteComponent";
 import { penniesToOutput } from "../utils/PriceUtils";
+import { Button } from "react-native-elements";
+import Header from "../components/Header";
 
 const Saved = () => {
     const { state: { store } } = useContext(HistoryContext);
@@ -40,9 +42,38 @@ const Saved = () => {
         );
     }
 
+    function generateHeader() {
+        return <View style={styles.header}>
+            <Header title="Saved Bills" />
+            <Button
+                icon={{ name: 'clear-all', size: 30, type: 'MaterialIcons', color: "white" }}
+                onPress={createAlert}
+                style={STYLES.button}
+            />
+        </View>
+    }
+
+    function createAlert() {
+        Alert.alert(
+            "Clear All",
+            "Are you sure you want to delete all saved items?",
+            [
+              {
+                text: "Cancel",
+                style: "cancel"
+              },
+              { text: "OK", 
+                onPress: store.deleteAll
+              }
+            ],
+            { cancelable: true }
+          );
+    }
+
     function generateHistoryOutput() {
         return (
             <View style={styles.container}>
+                { generateHeader() }
                 { history.length > 0 ? <FlatList
                     data={history}
                     renderItem={({ item }) => {
@@ -87,6 +118,13 @@ const styles = StyleSheet.create({
         marginVertical: 0,
         marginHorizontal: 0,
         flex: 1
+    },
+    header: {
+        flexDirection: "row",
+        margin: MARGIN,
+    },
+    headerButton: {
+        alignSelf: 'flex-end'
     },
     output: {
         marginHorizontal: 0,

@@ -1,9 +1,7 @@
 import React from "react";
 import { StyleSheet, Platform } from "react-native";
 import { Button } from "react-native-elements";
-import { generateOutputString } from "../utils/GenerateOutput";
 import { Share as NativeShare } from 'react-native';
-import { BillState } from "../context/BillContext";
 
 const share = async (text: string): Promise<boolean> => {
     try {

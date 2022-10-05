@@ -12,5 +12,6 @@ export interface HistoryItem {
 export interface HistoryStore {
     saveState: (state: BillState) => Promise<void>,
     fetchHistory: () => Promise<Array<HistoryItem>>,
-    deleteItem: (id: string) => Promise<void>
+    deleteItem: (id: string) => Promise<void>,
+    deleteAll: () => Promise<void>
 }

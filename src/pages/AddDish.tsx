@@ -38,7 +38,7 @@ interface AddDishProps {
     route: Route<"AddDish", AddDishParams>
 }
 
-const AddDish = ({ route }: AddDishProps) => {
+const AddDish = ({ route }: AddDishProps): JSX.Element => {
     const { state, actions: { addShares } } = useContext(BillContext);
     const { id } = route.params;
     const navigation = useNavigation();

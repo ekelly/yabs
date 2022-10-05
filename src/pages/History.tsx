@@ -1,18 +1,18 @@
-import React, { useContext, useEffect } from "react";
-import { Context as BillContext, Person, selectHistory } from "../context/BillContext";
+import React, { useContext } from "react";
+import { Context as BillContext, selectHistory } from "../context/BillContext";
 import { View, Text, StyleSheet, FlatList } from "react-native";
-import { useNavigation, CommonActions } from "@react-navigation/native";
 import TransactionRow from "../components/TransactionRow";
+import Header from "../components/Header";
 
 const History = () => {
     const { state, actions: { } } = useContext(BillContext);
-    const navigation = useNavigation();
     
     let transactionList = selectHistory(state);
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
+                <Header title="Transaction History" />
             </View>
             { transactionList.length ? <FlatList
                 data={transactionList}

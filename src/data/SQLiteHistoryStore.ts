@@ -27,6 +27,8 @@ const SQL_FETCH_BILLS = `SELECT * FROM ${TABLE_BILLS} ORDER BY ${COLUMN_TIMESTAM
 const SQL_FETCH_PEOPLE = `SELECT * FROM ${TABLE_PEOPLE}`;
 const SQL_DELETE_BILL = `DELETE FROM ${TABLE_BILLS} WHERE ${COLUMN_ID} = ?`;
 const SQL_DELETE_PEOPLE_BY_BILL_ID = `DELETE FROM ${TABLE_PEOPLE} WHERE ${COLUMN_BILL_ID} = ?`;
+const SQL_DELETE_ALL_BILLS = `DELETE FROM ${TABLE_BILLS}`;
+const SQL_DELETE_ALL_PEOPLE = `DELETE FROM ${TABLE_PEOPLE}`;
 
 interface BillRow {
     [COLUMN_ID]: string, 
@@ -178,6 +180,30 @@ export class SQLiteHistoryStore implements HistoryStore {
                     console.log(`Deleted people associated with bill ${id} from person table`);
                 }, (tx, error) => {
                     console.log(`Error deleting people associated with bill ${id} from person table due to ${error.message}`);
+                    return false;
+                });
+            }, (error) => {
+                reject(error.message);
+            }, () => {
+                resolve();
+            });
+        });
+    }
+
+    async deleteAll() {
+        let db = this.#db;
+        return new Promise<void>((resolve, reject) => {
+            db.transaction((transaction) => {
+                transaction.executeSql(SQL_DELETE_ALL_BILLS, [], (tx, result) => {
+                    console.log(`Deleted all bills from bill table`);
+                }, (tx, error) => {
+                    console.log(`Error deleting from bill table due to ${error.message}`);
+                    return false;
+                });
+                transaction.executeSql(SQL_DELETE_ALL_PEOPLE, [], (tx, result) => {
+                    console.log(`Deleted all people from person table`);
+                }, (tx, error) => {
+                    console.log(`Error deleting people from person table due to ${error.message}`);
                     return false;
                 });
             }, (error) => {

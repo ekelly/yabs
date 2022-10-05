@@ -63,7 +63,10 @@ const Saved = () => {
                 style: "cancel"
               },
               { text: "OK", 
-                onPress: store.deleteAll
+                onPress: async () => { 
+                    await store.deleteAll();
+                    fetchHistory();
+                }
               }
             ],
             { cancelable: true }

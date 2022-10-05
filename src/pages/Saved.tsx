@@ -19,7 +19,7 @@ const Saved = () => {
 
     const fetchHistory = async () => {
         console.log("Loading history");
-            let historyItems = await store.fetchHistory();
+            let historyItems = await (await store.fetchHistory()).filter(item => item.people.length > 0 && item.total !== 0);
             if (historyItems) {
                 console.log("Loaded history: " + historyItems.length);
                 setHistory(historyItems);

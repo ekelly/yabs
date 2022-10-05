@@ -34,7 +34,7 @@ const OutputComponent = ({ shouldDisplay, title, data, style }: OutputComponentP
     return (
         <View style={{ ...styles.outputContainer, ...style }}>
             <View style={styles.header}>
-                <Text h3>{title} </Text>
+                <Text h3 style={styles.headerText}>{title} </Text>
                 <Share shareText={generateOutputString(data)} style={styles.shareAllButton} hasTitle />
             </View>
             <FlatList 
@@ -63,7 +63,10 @@ const OutputComponent = ({ shouldDisplay, title, data, style }: OutputComponentP
 
 const styles = StyleSheet.create({
     header: {
-        flexDirection: "row"
+        flexDirection: "row",
+    },
+    headerText: {
+        flex: 1
     },
     outputContainer: {
         backgroundColor: "#dddddd",
@@ -97,7 +100,7 @@ const styles = StyleSheet.create({
     },
     shareAllButton: {
         paddingLeft: 0,
-        backgroundColor: "purple",
+        backgroundColor: "purple"
     }
 });
 

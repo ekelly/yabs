@@ -6,6 +6,8 @@ export const BUTTON_COLOR = Platform.OS === "ios" ? "#007AFF" : "#2196F3";
 
 export const MARGIN = 10;
 
+export const VENMO_COLOR = "#008CFF"
+
 export const STYLES = StyleSheet.create({
     button: {
         backgroundColor: BUTTON_COLOR,
@@ -15,5 +17,8 @@ export const STYLES = StyleSheet.create({
     },
     buttonText: {
         color: "white"
+    },
+    venmo: {
+        backgroundColor: VENMO_COLOR
     }
 });

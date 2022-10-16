@@ -1,9 +1,9 @@
 import React from "react";
-import { View, StyleSheet, FlatList, TouchableOpacity, ViewStyle } from "react-native";
+import { View, StyleSheet, FlatList, TouchableOpacity, ViewStyle, Image } from "react-native";
 import { Button, Text } from "react-native-elements";
 import { selectContributionPerPerson, selectPeopleList, getTotalShares, BillState } from "../context/BillContext";
 import launchVenmo from "../api/venmo";
-import { ROUNDED_CORNER_RADIUS, BUTTON_COLOR } from "../Constants"
+import { ROUNDED_CORNER_RADIUS, BUTTON_COLOR, VENMO_COLOR } from "../Constants"
 import Share from "../components/Share";
 import { HistoryItem } from "../data/HistoryStore";
 import { generateOutputString } from "../utils/GenerateOutput";
@@ -54,7 +54,11 @@ const OutputComponent = ({ shouldDisplay, title, data, style, hasSave }: OutputC
                                 }}
                                 style={styles.venmoButton}
                             >
-                                <Text style={styles.venmoText}>Venmo</Text>
+                                <Image
+                                    style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
+                                    source={require('../../assets/Venmo_Logo_White_small.png')}
+                                />
+                                
                             </TouchableOpacity> 
                             <Share shareText={generateOutputString(data, item.id)} style={{padding: 8}} />
                         </View>
@@ -95,9 +99,12 @@ const styles = StyleSheet.create({
     },
     venmoButton: {
         marginRight: 10,
+        padding: 10,
         borderRadius: 3,
-        backgroundColor: BUTTON_COLOR,
-        color: BUTTON_COLOR
+        width: 60,
+        height: 40,
+        backgroundColor: VENMO_COLOR,
+        color: VENMO_COLOR
     },
     venmoText: {
         fontSize: 22,

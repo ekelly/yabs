@@ -17,29 +17,32 @@ const BillSplitter = () => {
     const { state: { store }} = useContext(HistoryContext);
     const navigation = useNavigation();
     const saveState = useCallback(() => {
-        console.log("Id: " + state.id + " total: " + state.total);
+        console.log("Saving BillState state");
         store.saveState(state);
       }, [state]);
 
     // Save to the history view automatically whenever the app moves to the background
     useEffect(() => {
-        navigation.addListener('blur', saveState);
-        const subscription = AppState.addEventListener("change", nextAppState => {
+        const unsubscribeBlur = navigation.addListener('blur', () => {
+            saveState()
+        });
+        const appStateSubscription = AppState.addEventListener("change", nextAppState => {
             if (nextAppState.match(/inactive|background/)) {
                 saveState();
             }
         });
         return () => {
-          subscription.remove();
+            unsubscribeBlur();
+            appStateSubscription.remove();
         };
-      }, [saveState]);
+      }, [saveState, store]);
 
     const saveAndClear = useCallback(() => {
         saveState();
         clearAll();
         outputSwipeableRef.current?.close();
         setEditsInProgress(false);
-    }, [outputSwipeableRef, setEditsInProgress]);
+    }, [outputSwipeableRef, setEditsInProgress, saveState]);
 
     return (
         <View style={styles.container}>

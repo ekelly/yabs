@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context as HistoryContext } from "../context/HistoryContext";
 import { View, Text, StyleSheet, FlatList, Alert } from "react-native";
-import { HistoryItem } from "../data/HistoryStore";
+import { HistoryItem, HistoryStore } from "../data/HistoryStore";
 import OutputComponent from "../components/OutputComponent";
 import { timestampToDate } from "../utils/DateUtils";
 import { MARGIN, ROUNDED_CORNER_RADIUS, STYLES } from "../Constants";
@@ -17,22 +17,27 @@ const Saved = () => {
     const [fetchedHistory, setFetchedHistory] = useState<boolean>(false);
     const navigation = useNavigation();
 
-    const fetchHistory = async () => {
+    const fetchHistory = async (store: HistoryStore) => {
         console.log("Loading history");
-            let historyItems = await (await store.fetchHistory()).filter(item => item.people.length > 0 && item.total !== 0);
-            if (historyItems) {
-                console.log("Loaded history: " + historyItems.length);
-                setHistory(historyItems);
-            } else {
-                setHistory([]);
-            }
-            setFetchedHistory(true);
+        let historyItems = await (await store.fetchHistory()).filter(item => item.people.length > 0 && item.total !== 0);
+        if (historyItems) {
+            console.log("Loaded history: " + historyItems.length);
+            setHistory(historyItems);
+        } else {
+            setHistory([]);
+        }
+        setFetchedHistory(true);
     };
 
     useEffect(() => {
-        navigation.addListener('focus', fetchHistory);
-        fetchHistory();
-    }, [fetchedHistory]);
+        return navigation.addListener('focus', () => fetchHistory(store));
+    }, [store]);
+
+    useEffect(() => {
+        if (!fetchedHistory) {
+            fetchHistory(store);
+        }
+    }, [fetchedHistory, store]);
 
     function generateOutput() {
         return (
@@ -65,7 +70,7 @@ const Saved = () => {
               { text: "OK", 
                 onPress: async () => { 
                     await store.deleteAll();
-                    fetchHistory();
+                    setFetchedHistory(false);
                 }
               }
             ],

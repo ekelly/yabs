@@ -1,11 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Context as BillContext, Person, selectPeopleList } from "../context/BillContext";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import PersonSelectComponent from "../components/person-select/PersonSelectComponent";
 import { Route, useNavigation } from "@react-navigation/native";
 import { roundToTwoDecimals } from "../utils/NumberUtils";
 import { ROUNDED_CORNER_RADIUS } from "../Constants";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 type SelectedPeopleState = Set<string>;
 
@@ -58,11 +57,16 @@ const AddDish = ({ route }: AddDishProps): JSX.Element => {
     let itemCostInput: TextInput | null;
 
     return (
-        <View 
+        <TouchableOpacity 
             style={styles.background}
-            
+            onPress={navigation.goBack}
         >
-        <View style={styles.container}>
+        <View 
+            style={styles.container} 
+            onStartShouldSetResponder={(event) => true}
+            onTouchEnd={(e) => {
+                e.stopPropagation();
+            }}>
             <View style={styles.header}>
                 <Text style={styles.costText}>Item Cost: $ </Text>
                 <TextInput
@@ -103,7 +107,7 @@ const AddDish = ({ route }: AddDishProps): JSX.Element => {
                     setSelectedPeople(selectedPeopleSet);
                 }} />
         </View>
-        </View>
+        </TouchableOpacity>
     );
 }
 

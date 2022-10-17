@@ -16,6 +16,7 @@ const TransactionRow = ({ transaction }: TransactionRowProps) => {
     return (
         <SwipeDeleteComponent onDelete={() => deleteTransaction(transaction.id)}>
             <FlatList
+                style={styles.transaction}
                 data={transactionParticipants}
                 renderItem={({ item }) => {
                     let adjustment = transaction.adjustments.find(adjustment => adjustment.id === item.id);
@@ -37,6 +38,8 @@ const TransactionRow = ({ transaction }: TransactionRowProps) => {
 const styles = StyleSheet.create({
     row: {
         padding: 10,
+    },
+    transaction: {
         margin: 10,
         borderWidth: 1,
         borderRadius: ROUNDED_CORNER_RADIUS

@@ -50,7 +50,11 @@ const BillSplitter = () => {
             <PersonListComponent 
                 setEditsInProgress={setEditsInProgress} 
                 setFirstPersonNameRef={setFirstPersonNameRef} />
-            <View style={{maxHeight: '50%', flex: 1, justifyContent: 'flex-end' }}>
+            <View style={{
+                        flex: 1, 
+                        flexDirection: 'column', 
+                        justifyContent: 'flex-end',
+                         }}>
                 <SwipeComponent 
                         text="Save" 
                         color="#00f600" 

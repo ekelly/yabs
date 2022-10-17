@@ -63,7 +63,7 @@ const OutputComponent = ({ shouldDisplay, title, data, style, hasSave }: OutputC
                         </View>
                     );
                 }}
-                contentContainerStyle={{paddingBottom: 0}}
+                contentContainerStyle={{flexGrow: 1}}
                 keyExtractor={(item) => item.id}
                 data={peopleList}
             />
@@ -82,8 +82,10 @@ const styles = StyleSheet.create({
         backgroundColor: "#dddddd",
         borderRadius: ROUNDED_CORNER_RADIUS,
         padding: 10,
-        borderColor: 'green',
-        borderWidth: 1
+        borderColor: 'black',
+        borderWidth: 1,
+        flexGrow: 1,
+        marginBottom: 40 // Hack to solve items being cut off
     },
     person: {
         flexDirection: "row",

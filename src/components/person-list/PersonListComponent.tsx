@@ -30,7 +30,6 @@ const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: Pers
     const { state, actions: { addPerson }} = useContext(BillContext);
     const [editingInProgress, setEditingInProgress] = useState<Array<string>>([]);
     const listRef = useRef<FlatList|null>(null);
-    const [scrollToEnd, shouldScrollToEnd] = useState<boolean>(false);
 
     let peopleList = selectPeopleList(state);
 
@@ -43,7 +42,6 @@ const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: Pers
         <TouchableOpacity
             onPress={() => {
                 addPerson("Person " + (peopleList.length + 1));
-                shouldScrollToEnd(true);
             }}
         >
             <Text style={styles.addPerson}>Add Person</Text>
@@ -102,8 +100,6 @@ const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: Pers
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        borderColor: 'red',
-        borderWidth: 1
     },
     header: {
         flexDirection: "row",

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { View, StyleSheet, FlatList, TouchableOpacity, TextInput } from "react-native";
 import { Text } from "react-native-elements";
 import { Context as BillContext, selectPeopleList } from "../../context/BillContext";
@@ -29,6 +29,8 @@ function transitionToNextFocusElement(elementId: string) {
 const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: PersonListComponentProps) => {
     const { state, actions: { addPerson }} = useContext(BillContext);
     const [editingInProgress, setEditingInProgress] = useState<Array<string>>([]);
+    const listRef = useRef<FlatList|null>(null);
+    const [scrollToEnd, shouldScrollToEnd] = useState<boolean>(false);
 
     let peopleList = selectPeopleList(state);
 
@@ -41,6 +43,7 @@ const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: Pers
         <TouchableOpacity
             onPress={() => {
                 addPerson("Person " + (peopleList.length + 1));
+                shouldScrollToEnd(true);
             }}
         >
             <Text style={styles.addPerson}>Add Person</Text>
@@ -59,6 +62,7 @@ const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: Pers
 
     return (
         <View style={styles.container}>
+            <Header />
             <FlatList
                 renderItem={({item, index}) => {
                     return <PersonRow 
@@ -80,19 +84,26 @@ const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: Pers
                             }
                         }} />;
                 }}
+                ref={listRef}
+                ListFooterComponent={Footer}
                 keyExtractor={(item) => item.id}
                 data={peopleList}
+                onContentSizeChange={() => { 
+                    if (listRef) {
+                        listRef.current?.scrollToEnd();
+                    }
+                }}
                 style={styles.peopleList}
-                ListHeaderComponent={Header}
             />
-            <Footer />
         </View>
     );
 }
   
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        borderColor: 'red',
+        borderWidth: 1
     },
     header: {
         flexDirection: "row",

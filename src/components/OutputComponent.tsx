@@ -58,12 +58,12 @@ const OutputComponent = ({ shouldDisplay, title, data, style, hasSave }: OutputC
                                     style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
                                     source={require('../../assets/Venmo_Logo_White_small.png')}
                                 />
-                                
                             </TouchableOpacity> 
                             <Share shareText={generateOutputString(data, item.id)} style={{padding: 8}} />
                         </View>
                     );
                 }}
+                contentContainerStyle={{paddingBottom: 0}}
                 keyExtractor={(item) => item.id}
                 data={peopleList}
             />
@@ -81,7 +81,9 @@ const styles = StyleSheet.create({
     outputContainer: {
         backgroundColor: "#dddddd",
         borderRadius: ROUNDED_CORNER_RADIUS,
-        padding: 10
+        padding: 10,
+        borderColor: 'green',
+        borderWidth: 1
     },
     person: {
         flexDirection: "row",

@@ -10,11 +10,12 @@ interface SwipeComponentProps {
     text?: string,
     color: string,
     style?: ViewStyle | undefined,
+    swipeStyle?: ViewStyle | undefined,
     swipeDirection?: SwipeDirection,
     setRef?: React.RefObject<Swipeable>
 }
 
-const SwipeComponent = ({ onSwipe, children, text, color, style, swipeDirection, setRef }: SwipeComponentProps) => {
+const SwipeComponent = ({ onSwipe, children, text, color, style, swipeStyle, swipeDirection, setRef }: SwipeComponentProps) => {
 
     const noOpSwipeRenderer = (progress: Animated.AnimatedInterpolation,
                                dragAnimatedValue: Animated.AnimatedInterpolation) => {
@@ -38,7 +39,7 @@ const SwipeComponent = ({ onSwipe, children, text, color, style, swipeDirection,
             });
         }
         return (
-            <Animated.View style={[{...styles.swipedRow, ...style, backgroundColor: color, }, {opacity}]}>
+            <Animated.View style={[{...styles.swipedRow, ...swipeStyle, backgroundColor: color, }, {opacity}]}>
                 <Animated.Text style={styles.rowText}>{text}</Animated.Text>
             </Animated.View>
         );
@@ -51,6 +52,7 @@ const SwipeComponent = ({ onSwipe, children, text, color, style, swipeDirection,
                 renderRightActions={noOpSwipeRenderer}
                 overshootLeft={false}
                 ref={setRef}
+                childrenContainerStyle={style}
                 onSwipeableOpen={onSwipe}>
                 {children}
             </Swipeable> : <Swipeable
@@ -58,6 +60,7 @@ const SwipeComponent = ({ onSwipe, children, text, color, style, swipeDirection,
                 renderLeftActions={noOpSwipeRenderer}
                 overshootRight={false}
                 ref={setRef}
+                childrenContainerStyle={style}
                 onSwipeableOpen={onSwipe}>
                 {children}
             </Swipeable> }

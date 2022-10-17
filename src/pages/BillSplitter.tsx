@@ -50,15 +50,17 @@ const BillSplitter = () => {
             <PersonListComponent 
                 setEditsInProgress={setEditsInProgress} 
                 setFirstPersonNameRef={setFirstPersonNameRef} />
-            <SwipeComponent 
-                    text="Save" 
-                    color="#00f600" 
-                    onSwipe={saveAndClear} 
-                    swipeDirection="right" 
-                    style={{ maxHeight: '50%' }} 
-                    setRef={outputSwipeableRef}>
-                <OutputComponent title="Totals" shouldDisplay={!contributionEditsAreInProgress} data={state} />
-            </SwipeComponent>
+            <View style={{maxHeight: '50%', flex: 1, justifyContent: 'flex-end' }}>
+                <SwipeComponent 
+                        text="Save" 
+                        color="#00f600" 
+                        onSwipe={saveAndClear} 
+                        swipeDirection="right"
+                        style={{ maxHeight: '100%' }}
+                        setRef={outputSwipeableRef}>
+                    <OutputComponent title="Totals" shouldDisplay={!contributionEditsAreInProgress} data={state} />
+                </SwipeComponent>
+            </View>
         </View>
     );
 }

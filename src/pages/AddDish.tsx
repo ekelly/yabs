@@ -138,7 +138,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#0000007f',
         flexDirection: 'column',
-        alignContent: 'flex-end'
+        alignContent: 'flex-end',
+        justifyContent: 'center'
     }
 });
 

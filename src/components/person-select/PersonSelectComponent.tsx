@@ -84,7 +84,7 @@ const PersonSelectComponent = ({ data, onCancel, onDone, onSelectionChanged, onT
   
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        width: '100%'
     },
     newPersonContainer: {
         marginVertical: 10,

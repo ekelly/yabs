@@ -21,7 +21,7 @@ const HomeScreenStack = () => {
     <Home.Group>
       <Home.Screen name="Default" component={BillSplitter} />
     </Home.Group>
-    <Home.Group screenOptions={{ presentation: 'modal' }}>
+    <Home.Group screenOptions={{ presentation: 'transparentModal', cardStyle: { backgroundColor: 'transparent' }, gestureEnabled: false }}>
       <Home.Screen name="AddDish" component={AddDish} />
     </Home.Group>
   </Home.Navigator>);

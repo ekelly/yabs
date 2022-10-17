@@ -4,6 +4,8 @@ import { View, Text, StyleSheet, TextInput } from "react-native";
 import PersonSelectComponent from "../components/person-select/PersonSelectComponent";
 import { Route, useNavigation } from "@react-navigation/native";
 import { roundToTwoDecimals } from "../utils/NumberUtils";
+import { ROUNDED_CORNER_RADIUS } from "../Constants";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 type SelectedPeopleState = Set<string>;
 
@@ -56,6 +58,10 @@ const AddDish = ({ route }: AddDishProps): JSX.Element => {
     let itemCostInput: TextInput | null;
 
     return (
+        <View 
+            style={styles.background}
+            
+        >
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.costText}>Item Cost: $ </Text>
@@ -97,16 +103,25 @@ const AddDish = ({ route }: AddDishProps): JSX.Element => {
                     setSelectedPeople(selectedPeopleSet);
                 }} />
         </View>
+        </View>
     );
 }
-  
+
 const styles = StyleSheet.create({
     container: {
         margin: 10,
-        flex: 1
+        backgroundColor: 'white',
+        padding: 10,
+        borderRadius: ROUNDED_CORNER_RADIUS,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        borderColor: 'black',
+        borderWidth: 1,
+        alignItems: 'center',
     },
     header: {
-        flexDirection: "row"
+        flexDirection: "row",
+        width: '100%',
     },
     costText: {
         fontSize: 28,
@@ -114,6 +129,12 @@ const styles = StyleSheet.create({
     },
     costInput: {
         fontSize: 28,
+    },
+    background: {
+        flex: 1,
+        backgroundColor: '#0000007f',
+        flexDirection: 'column',
+        alignContent: 'flex-end'
     }
 });
 

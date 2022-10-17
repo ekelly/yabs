@@ -76,9 +76,15 @@ function internalAddPerson(state: BillState, name: string): BillState {
 }
 
 function internalDeletePerson(state: BillState, id: string): BillState {
-    // TODO: deleting a person should recalculate the total split
-    // It should also modify transactions to remove the person from it
-    return { ...state, people: [ ...state.people ].filter(value => id !== value.id) };
+    return { ...state, 
+         people: [ ...state.people ].filter(value => id !== value.id),
+         transactions: [ ...state.transactions ].map((transaction) => {
+            return {
+                ...transaction,
+                adjustments: [ ...transaction.adjustments ].filter(adjustment => adjustment.id !== id)
+            }
+         })
+     };
 }
 
 function internalUpdatePersonName(state: BillState, id: string, name: string): BillState {

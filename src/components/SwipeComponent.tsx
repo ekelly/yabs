@@ -52,7 +52,7 @@ const SwipeComponent = ({ onSwipe, children, text, color, style, swipeStyle, swi
                 renderRightActions={noOpSwipeRenderer}
                 overshootLeft={false}
                 ref={setRef}
-                childrenContainerStyle={style}
+                containerStyle={style}
                 onSwipeableOpen={onSwipe}>
                 {children}
             </Swipeable> : <Swipeable
@@ -60,7 +60,7 @@ const SwipeComponent = ({ onSwipe, children, text, color, style, swipeStyle, swi
                 renderLeftActions={noOpSwipeRenderer}
                 overshootRight={false}
                 ref={setRef}
-                childrenContainerStyle={style}
+                containerStyle={style}
                 onSwipeableOpen={onSwipe}>
                 {children}
             </Swipeable> }
@@ -72,8 +72,7 @@ const styles = StyleSheet.create({
     swipedRow: {
         flexDirection: 'column',
         justifyContent: 'center',
-        height: '100%',
-        width: "100%"
+        flex: 1
     },
     rowText: {
         fontSize: 20,

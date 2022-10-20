@@ -11,11 +11,10 @@ interface PersonRowProps {
     index: number,
     setNameInputRef: (nameInput: TextInput | null, id: string) => void,
     setContributionInputRef: (contributionInput: TextInput | null, id: string) => void,
-    setEditsInProgress: (editsInProgress: boolean) => void,
     onEndEditing: (elementId: string) => void
 }
 
-const PersonRow = ({ person, index, setNameInputRef, setContributionInputRef, setEditsInProgress, onEndEditing }: PersonRowProps) => {
+const PersonRow = ({ person, index, setNameInputRef, setContributionInputRef, onEndEditing }: PersonRowProps) => {
     const navigation = useNavigation();
     const { state, actions: { updateShare, updatePersonName, deletePerson }} = useContext(BillContext);
     const [personShare, setPersonShare] = useState<string>(""+person.share);
@@ -35,8 +34,6 @@ const PersonRow = ({ person, index, setNameInputRef, setContributionInputRef, se
                     onSubmitEditing={() => { onEndEditing(person.id); }}
                     value={person.name}
                     style={styles.personName}
-                    onFocus={() => setEditsInProgress(true) }
-                    onBlur={() => setEditsInProgress(false) }
                     ref={(input) => {
                         setNameInputRef(input, person.id);
                     }}
@@ -69,8 +66,6 @@ const PersonRow = ({ person, index, setNameInputRef, setContributionInputRef, se
                         }
                         onEndEditing(person.id + "-share");
                     }}
-                    onFocus={() => setEditsInProgress(true) }
-                    onBlur={() => setEditsInProgress(false) }
                     placeholder="$$$$"
                 />
                 <Icon

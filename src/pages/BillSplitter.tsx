@@ -1,20 +1,20 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useContext, useState, useEffect, useCallback, useRef } from "react";
 import { View, StyleSheet, TextInput, AppState } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
 import OutputComponent from "../components/OutputComponent";
 import PersonListComponent from "../components/person-list/PersonListComponent";
-import SwipeComponent from "../components/SwipeComponent";
 import TotalBillComponent from "../components/TotalBillComponent";
 import { Context as BillContext } from "../context/BillContext";
 import { Context as HistoryContext } from "../context/HistoryContext";
+import HideWithKeyboard from 'react-native-hide-with-keyboard';
+import SwipeComponent from "../components/SwipeComponent";
+import { Swipeable } from "react-native-gesture-handler";
 
 const BillSplitter = () => {
-    const [contributionEditsAreInProgress, setEditsInProgress] = useState(true);
     const [firstPersonNameRef, setFirstPersonNameRef] = useState<TextInput|null>(null);
-    const outputSwipeableRef = useRef<Swipeable>(null);
     const { state, actions: { clearAll } } = useContext(BillContext);
     const { state: { store }} = useContext(HistoryContext);
+    const swipeableRef = useRef<Swipeable|null>(null);
     const navigation = useNavigation();
     const saveState = useCallback(() => {
         console.log("Saving BillState state");
@@ -40,30 +40,20 @@ const BillSplitter = () => {
     const saveAndClear = useCallback(() => {
         saveState();
         clearAll();
-        outputSwipeableRef.current?.close();
-        setEditsInProgress(false);
-    }, [outputSwipeableRef, setEditsInProgress, saveState]);
+        swipeableRef?.current?.close();
+    }, [saveState]);
 
     return (
         <View style={styles.container}>
             <TotalBillComponent firstNameInput={firstPersonNameRef} />
             <PersonListComponent 
-                setEditsInProgress={setEditsInProgress} 
                 setFirstPersonNameRef={setFirstPersonNameRef} />
-            <View style={{
-                        flex: 1,
-                        flexDirection: 'column', 
-                        justifyContent: 'flex-end',
-                         }}>
-                <SwipeComponent 
-                        text="Save" 
-                        color="#00f600" 
-                        onSwipe={saveAndClear} 
-                        swipeDirection="right"
-                        style={{ maxHeight: '100%' }}
-                        setRef={outputSwipeableRef}>
-                    <OutputComponent title="Totals" shouldDisplay={!contributionEditsAreInProgress} data={state} />
-                </SwipeComponent>
+            <View style={styles.outputContainer}>
+                <HideWithKeyboard>
+                    <SwipeComponent onSwipe={saveAndClear} setRef={swipeableRef} text="Save" color="#00f500" swipeDirection="right">
+                        <OutputComponent title="Totals" data={state} /> 
+                    </SwipeComponent>
+                </HideWithKeyboard>
             </View>
         </View>
     );
@@ -71,8 +61,13 @@ const BillSplitter = () => {
 
 const styles = StyleSheet.create({
     container: {
-        margin: 10,
+        padding: 10,
         flex: 1
+    },
+    outputContainer: {
+        flex: 1,
+        flexDirection: 'column', 
+        justifyContent: 'flex-end',
     }
 });
 

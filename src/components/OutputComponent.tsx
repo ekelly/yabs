@@ -11,17 +11,13 @@ import { generateOutputString } from "../utils/GenerateOutput";
 type OutputData = BillState | HistoryItem;
 
 interface OutputComponentProps {
-    shouldDisplay: boolean,
     title: string,
     data: OutputData,
     style?: ViewStyle,
     hasSave?: boolean
 }
 
-const OutputComponent = ({ shouldDisplay, title, data, style, hasSave }: OutputComponentProps) => {
-    if (!shouldDisplay) {
-        return null;
-    }
+const OutputComponent = ({ title, data, style, hasSave }: OutputComponentProps) => {
 
     let people = selectPeopleList(data);
     let totalShares: number = getTotalShares(people);
@@ -65,6 +61,7 @@ const OutputComponent = ({ shouldDisplay, title, data, style, hasSave }: OutputC
                 }}
                 keyExtractor={(item) => item.id}
                 data={peopleList}
+                style={{flexGrow: 1}}
             />
         </View>
     );
@@ -83,15 +80,17 @@ const styles = StyleSheet.create({
         padding: 10,
         borderColor: 'black',
         borderWidth: 1,
-        flexGrow: 1,
-        marginBottom: 40 // Hack to solve items being cut off
+        flexDirection: 'column',
+        flexShrink: 1,
+        maxHeight: '100%'
     },
     person: {
         flexDirection: "row",
         alignItems: "flex-end",
         marginVertical: 10,
         borderBottomWidth: 1,
-        borderBottomColor: "#cdcdcd"
+        borderBottomColor: "#cdcdcd",
+        height: 40
     },
     personName: {
         fontSize: 20,

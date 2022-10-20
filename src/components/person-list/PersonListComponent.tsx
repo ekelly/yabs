@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { View, StyleSheet, FlatList, TouchableOpacity, TextInput } from "react-native";
 import { Text } from "react-native-elements";
 import { Context as BillContext, selectPeopleList } from "../../context/BillContext";
 import PersonRow from "./PersonRow";
 
 interface PersonListComponentProps {
-    setEditsInProgress: (editsInProgress: boolean) => void,
     setFirstPersonNameRef: (firstPersonName: TextInput | null) => void,
 }
 
@@ -26,9 +25,8 @@ function transitionToNextFocusElement(elementId: string) {
     }
 }
 
-const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: PersonListComponentProps) => {
+const PersonListComponent = ({ setFirstPersonNameRef }: PersonListComponentProps) => {
     const { state, actions: { addPerson }} = useContext(BillContext);
-    const [editingInProgress, setEditingInProgress] = useState<Array<string>>([]);
     const [shouldScrollList, setShouldScrollList] = useState(false);
     const listRef = useRef<FlatList|null>(null);
 
@@ -50,16 +48,6 @@ const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: Pers
         </TouchableOpacity>
     </View>;
 
-    useEffect(() => {
-        if (editingInProgress.length > 0) {
-            setEditsInProgress(true);
-        } else {
-            // TODO: We need to account for the delay of switching between different
-            // text inputs so that the totals box doesn't flicker
-            setEditsInProgress(editingInProgress.length > 0);
-        }
-    }, [editingInProgress]);
-
     return (
         <View style={styles.container}>
             <Header />
@@ -76,13 +64,7 @@ const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: Pers
                             addToInputList(id, contributionInput);
                         }}
                         onEndEditing={transitionToNextFocusElement}
-                        setEditsInProgress={(isEditInProgress) => {
-                            if (isEditInProgress) {
-                                setEditingInProgress([...editingInProgress, item.id]);
-                            } else {
-                                setEditingInProgress([...editingInProgress].filter(pid => pid !== item.id));
-                            }
-                        }} />;
+                        />;
                 }}
                 ref={listRef}
                 ListFooterComponent={Footer}
@@ -116,7 +98,7 @@ const styles = StyleSheet.create({
         fontStyle: "italic"
     },
     peopleList: {
-        flexGrow: 0,
+        flex: 1
     },
     newPersonContainer: {
         marginVertical: 10,

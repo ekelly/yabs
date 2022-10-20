@@ -51,7 +51,7 @@ const BillSplitter = () => {
                 setEditsInProgress={setEditsInProgress} 
                 setFirstPersonNameRef={setFirstPersonNameRef} />
             <View style={{
-                        flex: 1, 
+                        flex: 1,
                         flexDirection: 'column', 
                         justifyContent: 'flex-end',
                          }}>

@@ -63,7 +63,6 @@ const OutputComponent = ({ shouldDisplay, title, data, style, hasSave }: OutputC
                         </View>
                     );
                 }}
-                contentContainerStyle={{flexGrow: 1}}
                 keyExtractor={(item) => item.id}
                 data={peopleList}
             />

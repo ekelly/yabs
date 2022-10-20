@@ -29,6 +29,7 @@ function transitionToNextFocusElement(elementId: string) {
 const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: PersonListComponentProps) => {
     const { state, actions: { addPerson }} = useContext(BillContext);
     const [editingInProgress, setEditingInProgress] = useState<Array<string>>([]);
+    const [shouldScrollList, setShouldScrollList] = useState(false);
     const listRef = useRef<FlatList|null>(null);
 
     let peopleList = selectPeopleList(state);
@@ -42,6 +43,7 @@ const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: Pers
         <TouchableOpacity
             onPress={() => {
                 addPerson("Person " + (peopleList.length + 1));
+                setShouldScrollList(true);
             }}
         >
             <Text style={styles.addPerson}>Add Person</Text>
@@ -86,9 +88,11 @@ const PersonListComponent = ({ setEditsInProgress, setFirstPersonNameRef }: Pers
                 ListFooterComponent={Footer}
                 keyExtractor={(item) => item.id}
                 data={peopleList}
-                onContentSizeChange={() => { 
-                    if (listRef) {
-                        listRef.current?.scrollToEnd();
+                onEndReachedThreshold={0.3}
+                onEndReached={({ distanceFromEnd }) => {
+                    if (shouldScrollList) {
+                        listRef?.current?.scrollToEnd();
+                        setShouldScrollList(false);
                     }
                 }}
                 style={styles.peopleList}
@@ -112,7 +116,7 @@ const styles = StyleSheet.create({
         fontStyle: "italic"
     },
     peopleList: {
-        flexGrow: 0
+        flexGrow: 0,
     },
     newPersonContainer: {
         marginVertical: 10,
@@ -124,8 +128,6 @@ const styles = StyleSheet.create({
         minWidth: 150,
         fontSize: 22,
         textDecorationLine: "underline",
-        borderColor: "black",
-        borderWidth: 0,
     }
 });
 

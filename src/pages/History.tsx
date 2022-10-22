@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     },
     noItemsText: {
         fontSize: 20,
-        alignSelf: "center"
+        textAlign: "center"
     }
 });
 

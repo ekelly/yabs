@@ -42,20 +42,10 @@ const Saved = () => {
     function generateOutput() {
         return (
             <View style={styles.container}>
+                { generateHeader(history.length > 0) }
                 { history.length > 0 ? generateHistoryOutput() : generateNoItemsOutput() }
             </View>
         );
-    }
-
-    function generateHeader() {
-        return <View style={styles.header}>
-            <Header title="Saved Bills" />
-            <Button
-                icon={{ name: 'clear-all', size: 30, type: 'MaterialIcons', color: "white" }}
-                onPress={createAlert}
-                style={STYLES.button}
-            />
-        </View>
     }
 
     function createAlert() {
@@ -78,46 +68,54 @@ const Saved = () => {
           );
     }
 
+    function generateHeader(showClearAll: boolean) {
+        return (<View style={styles.header}>
+            <Header title="Saved Bills" />
+            { showClearAll ? 
+            <Button
+                icon={{ name: 'clear-all', size: 30, type: 'MaterialIcons', color: "white" }}
+                onPress={createAlert}
+                style={STYLES.button} />
+                : null }
+        </View>);
+    }
+
     function generateHistoryOutput() {
-        return (
-            <View style={styles.container}>
-                { generateHeader() }
-                { history.length > 0 ? <FlatList
+        return (<FlatList
                     data={history}
                     renderItem={({ item }) => {
                         let timestamp = timestampToDate(item.timestamp).toDateString();
                         let description = `${item.description ? item.description : "Total"}: ${penniesToOutput(item.total)}`;
                         return (
-                            <SwipeDeleteComponent onDelete={() => {
-                                store.deleteItem(item.id);
-                                setFetchedHistory(false);
-                            }}>
                                 <View style={styles.row}>
-                                    <OutputComponent shouldDisplay title={description} data={item} style={styles.output} />
-                                    <Text style={{ alignSelf: "flex-end", marginRight: 10 }}>{timestamp}</Text>
+                                    <SwipeDeleteComponent onDelete={() => {
+                                        store.deleteItem(item.id);
+                                        setFetchedHistory(false);
+                                    }}>
+                                        <View style={styles.savedBill}>
+                                        <OutputComponent title={description} data={item} style={styles.output} />
+                                        <Text style={{ alignSelf: "flex-end", marginRight: 10 }}>{timestamp}</Text>
+                                        </View>
+                                    </SwipeDeleteComponent>
                                 </View>
-                            </SwipeDeleteComponent>
+                            
                         );
                     }}
                     keyExtractor={(item) => item.id }
-                /> : <Text style={{ fontSize: 30 }}>No saved items</Text> }
-            </View>
+                />
         );
     }
 
     function generateNoItemsOutput() {
-        return <Text style={{ fontSize: 30 }}>No saved items</Text>;
-    }
-
-    function generateLoadingOutput() {
-        // return <Text style={{ fontSize: 30 }}>Loading...</Text>;
-        return null;
+        return (<View style={{ flexDirection: 'column', flex: 1, justifyContent: 'center' }}>
+            <Text style={{ fontSize: 20, textAlign: 'center' }}>No saved items</Text>
+        </View>);
     }
 
     if (fetchedHistory) {
         return generateOutput();
     } else {
-        return generateLoadingOutput();
+        return null;
     }
 }
 
@@ -143,7 +141,9 @@ const styles = StyleSheet.create({
     row: {
         marginBottom: 15,
         marginHorizontal: 10,
-        backgroundColor: "lightgrey",
+    },
+    savedBill: {
+        backgroundColor: '#dddddd',
         borderRadius: ROUNDED_CORNER_RADIUS
     }
 });

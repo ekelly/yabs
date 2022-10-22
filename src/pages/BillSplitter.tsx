@@ -9,6 +9,7 @@ import { Context as HistoryContext } from "../context/HistoryContext";
 import HideWithKeyboard from 'react-native-hide-with-keyboard';
 import SwipeComponent from "../components/SwipeComponent";
 import { Swipeable } from "react-native-gesture-handler";
+import { ROUNDED_CORNER_RADIUS } from "../Constants"
 
 const BillSplitter = () => {
     const [firstPersonNameRef, setFirstPersonNameRef] = useState<TextInput|null>(null);
@@ -51,7 +52,7 @@ const BillSplitter = () => {
             <View style={styles.outputContainer}>
                 <HideWithKeyboard>
                     <SwipeComponent onSwipe={saveAndClear} setRef={swipeableRef} text="Save" color="#00f500" swipeDirection="right">
-                        <OutputComponent title="Totals" data={state} /> 
+                        <OutputComponent title="Totals" data={state} style={styles.outputComponent} /> 
                     </SwipeComponent>
                 </HideWithKeyboard>
             </View>
@@ -68,6 +69,11 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column', 
         justifyContent: 'flex-end',
+    },
+    outputComponent: {
+        borderColor: 'black',
+        borderWidth: 1,
+        borderRadius: ROUNDED_CORNER_RADIUS,
     }
 });
 

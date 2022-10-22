@@ -3,7 +3,7 @@ import { View, StyleSheet, FlatList, TouchableOpacity, ViewStyle, Image } from "
 import { Button, Text } from "react-native-elements";
 import { selectContributionPerPerson, selectPeopleList, getTotalShares, BillState } from "../context/BillContext";
 import launchVenmo from "../api/venmo";
-import { ROUNDED_CORNER_RADIUS, BUTTON_COLOR, VENMO_COLOR } from "../Constants"
+import { VENMO_COLOR } from "../Constants"
 import Share from "../components/Share";
 import { HistoryItem } from "../data/HistoryStore";
 import { generateOutputString } from "../utils/GenerateOutput";
@@ -76,10 +76,7 @@ const styles = StyleSheet.create({
     },
     outputContainer: {
         backgroundColor: "#dddddd",
-        borderRadius: ROUNDED_CORNER_RADIUS,
         padding: 10,
-        borderColor: 'black',
-        borderWidth: 1,
         flexDirection: 'column',
         flexShrink: 1,
         maxHeight: '100%'

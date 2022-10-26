@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     container: {
         marginVertical: 0,
         marginHorizontal: 0,
-        flex: 1
+        flex: 1,
     },
     header: {
         flexDirection: "row",
@@ -144,7 +144,9 @@ const styles = StyleSheet.create({
     },
     savedBill: {
         backgroundColor: '#dddddd',
-        borderRadius: ROUNDED_CORNER_RADIUS
+        borderRadius: ROUNDED_CORNER_RADIUS,
+        borderColor: 'black',
+        borderWidth: 1
     }
 });
 

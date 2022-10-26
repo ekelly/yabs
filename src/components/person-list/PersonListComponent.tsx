@@ -35,17 +35,12 @@ const PersonListComponent = ({ setFirstPersonNameRef }: PersonListComponentProps
     </View>;
 
     function transitionToNextFocusElement(elementId: string) {
-        console.log(`Names: ${JSON.stringify(nameInputList.map(value => value.elementId))}`);
-        console.log(`Moneys: ${JSON.stringify(moneyInputList.map(value => value.elementId))}`);
         let indexOfElement = nameInputList.findIndex(value => elementId === value.elementId);
-        console.log(`Found ${elementId} at index ${indexOfElement} / ${nameInputList.length - 1}`);
         let arrayOfElements = nameInputList;
         if (indexOfElement < 0) {
             indexOfElement = moneyInputList.findIndex(value => elementId === value.elementId);
-            console.log(`Actually found ${elementId} at index ${indexOfElement} / ${moneyInputList.length - 1}`);
             arrayOfElements = moneyInputList;            
         } else if (indexOfElement == nameInputList.length - 1) {
-            console.log(`Switching lists`);
             // Switch lists
             indexOfElement = -1;
             arrayOfElements = moneyInputList;
@@ -55,8 +50,10 @@ const PersonListComponent = ({ setFirstPersonNameRef }: PersonListComponentProps
         if (indexOfNextElement < arrayOfElements.length) {
             // Focus on the next element
             let nextElement = arrayOfElements[indexOfNextElement].input;
-            console.log(`Found ${nextElement}`);
             nextElement?.focus();
+        } else if (indexOfElement == arrayOfElements.length - 1) {
+            // This situation should only occur if we have run out of text inputs
+            arrayOfElements[indexOfElement].input?.blur();
         }
     }
 

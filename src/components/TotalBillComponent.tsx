@@ -22,11 +22,8 @@ const TotalBillComponent = ({ firstNameInput }: TotalBillComponentProps) => {
                 value={description}
                 keyboardType="ascii-capable"
                 onChangeText={updateDescription}
-                onSubmitEditing={() => {
-                    if (textInput) {
-                        textInput.focus();
-                    }
-                }}
+                onSubmitEditing={() => { textInput?.focus(); }}
+                blurOnSubmit={false}
                 autoFocus
             />
             { stringTotal ? <Text style={styles.dollarSign}>$ </Text> : null }
@@ -43,18 +40,17 @@ const TotalBillComponent = ({ firstNameInput }: TotalBillComponentProps) => {
                         updateStringTotal(text);
                     }
                 }}
-                onEndEditing={({ nativeEvent: { text }}) => {
+                onSubmitEditing={({ nativeEvent: { text }}) => {
                     let num = textToNumber(text);
                     if (num) {
                         updateTotal(num);
                     } else {
                         updateTotal(0);
                     }
-                    if (firstNameInput !== null) {
-                        firstNameInput.focus();
-                    }
+                    firstNameInput?.focus();
                 }}
                 showSoftInputOnFocus
+                blurOnSubmit={false}
             />
         </View>
     );

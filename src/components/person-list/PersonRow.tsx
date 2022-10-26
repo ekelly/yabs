@@ -38,6 +38,7 @@ const PersonRow = ({ person, index, setNameInputRef, setContributionInputRef, on
                         setNameInputRef(input, person.id);
                     }}
                     selectTextOnFocus
+                    blurOnSubmit={false}
                 />
                 <View style={{flex: 1}} />
                 <TextInput
@@ -67,6 +68,7 @@ const PersonRow = ({ person, index, setNameInputRef, setContributionInputRef, on
                         onEndEditing(person.id + "-share");
                     }}
                     placeholder="$$$$"
+                    blurOnSubmit={false}
                 />
                 <Icon
                     name="tag-plus"

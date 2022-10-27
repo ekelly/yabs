@@ -1,7 +1,7 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { View, StyleSheet, FlatList, TouchableOpacity, TextInput } from "react-native";
 import { Text } from "react-native-elements";
-import { Context as BillContext, selectPeopleList } from "../../context/BillContext";
+import { Context as BillContext, selectPeopleList, Person } from "../../context/BillContext";
 import PersonRow from "./PersonRow";
 
 interface PersonListComponentProps {
@@ -9,13 +9,31 @@ interface PersonListComponentProps {
 }
 
 interface TextInputHolder {
+    personId: string,
     input: TextInput | null;
     type: 'name' | 'money';
     elementId: string;
 }
 
-let moneyInputList: Array<TextInputHolder> = [];
-let nameInputList: Array<TextInputHolder> = [];
+let inputListRef: { list: Array<TextInputHolder> } = { list: [] };
+
+function addToInputList(input: TextInput | null, elementId: string, type: 'name' | 'money', personId: string) {
+    let inputList = inputListRef.list;
+    if (inputList.findIndex(item => item.elementId === elementId) !== -1) {
+        inputList.map(item => {
+            if (item.elementId === elementId || (item.personId === personId && item.type === type)) {
+                return { elementId, type, input, personId }
+            }
+            return item;
+        });
+    } else {
+        inputList.push({ elementId, type, input, personId });
+    }
+}
+
+function clearStaleReferences(personIds: Array<string>) {
+    inputListRef.list = [ ...inputListRef.list.filter(item => personIds.includes(item.personId)) ];
+}
 
 const PersonListComponent = ({ setFirstPersonNameRef }: PersonListComponentProps) => {
     const { state, actions: { addPerson }} = useContext(BillContext);
@@ -40,26 +58,34 @@ const PersonListComponent = ({ setFirstPersonNameRef }: PersonListComponentProps
         </TouchableOpacity>
     </View>;
 
-    function transitionToNextFocusElement(elementId: string) {
-        let indexOfElement = nameInputList.findIndex(value => elementId === value.elementId);
-        let arrayOfElements = nameInputList;
-        if (indexOfElement < 0) {
-            indexOfElement = moneyInputList.findIndex(value => elementId === value.elementId);
-            arrayOfElements = moneyInputList;            
-        } else if (indexOfElement == nameInputList.length - 1) {
-            // Switch lists
-            indexOfElement = -1;
-            arrayOfElements = moneyInputList;
+    useEffect(() => {
+        clearStaleReferences(peopleList.map(person => person.id));
+    }, [peopleList]);
+
+    function nextFocus(elementId: string) {
+        let inputList = inputListRef.list;
+        let index = inputList.findIndex((value) => {
+            return value.elementId === elementId;
+        });
+        if (index < 0) {
+            // Not found
+            return;
         }
-        let indexOfNextElement = indexOfElement + 1;
-        
-        if (indexOfNextElement < arrayOfElements.length) {
-            // Focus on the next element
-            let nextElement = arrayOfElements[indexOfNextElement].input;
-            nextElement?.focus();
-        } else if (indexOfElement == arrayOfElements.length - 1) {
-            // This situation should only occur if we have run out of text inputs
-            arrayOfElements[indexOfElement].input?.blur();
+        console.log(`Input list length: ${inputList.length}`);
+        if (index < inputList.length) {
+            if (index === inputList.length - 1) {
+                console.log("Hit last item of the list. Hiding keyboard");
+                // Last item of the list
+                let currItem = inputList[index];
+                currItem.input?.blur();
+            } else {
+                let nextItemIndex = index + 2;
+                if (nextItemIndex >= inputList.length) {
+                    nextItemIndex = nextItemIndex % (inputList.length - 1);
+                }
+                let nextItem = inputList[nextItemIndex];
+                nextItem.input?.focus();
+            }
         }
     }
 
@@ -67,22 +93,18 @@ const PersonListComponent = ({ setFirstPersonNameRef }: PersonListComponentProps
         <View style={styles.container}>
             <Header />
             <FlatList
-                renderItem={({item, index}) => {
+                renderItem={({item, index}: {item: Person, index: number}) => {
                     return <PersonRow 
                         person={item} 
                         index={index} 
                         setNameInputRef={(nameInput, id) => {
-                            if (!nameInputList.map(item => item.elementId).includes(id)) {
-                                nameInputList.push({ elementId: id, input: nameInput, type: 'name' });
-                            }
+                            addToInputList(nameInput, id, 'name', item.id);
                             if (index === 0) setFirstPersonNameRef(nameInput);
                         }}
                         setContributionInputRef={(contributionInput, id) => {
-                            if (!moneyInputList.map(item => item.elementId).includes(id)) {
-                                moneyInputList.push({ elementId: id, input: contributionInput, type: 'money' });
-                            }
+                            addToInputList(contributionInput, id, 'money', item.id);
                         }}
-                        onEndEditing={transitionToNextFocusElement}
+                        onEndEditing={nextFocus}
                         />;
                 }}
                 ref={listRef}

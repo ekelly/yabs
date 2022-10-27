@@ -22,7 +22,14 @@ const Saved = () => {
         let historyItems = await (await store.fetchHistory()).filter(item => item.people.length > 0 && item.total !== 0);
         if (historyItems) {
             console.log("Loaded history: " + historyItems.length);
-            setHistory(historyItems);
+            let returnValueIsSameAsCache = historyItems.reduceRight<boolean>((acc, curr, idx) => {
+                let item = history[idx];
+                return item && item.id === curr.id && acc;
+            }, true);
+            if (!returnValueIsSameAsCache) {
+                console.log("Updated history: " + historyItems.length);
+                setHistory(historyItems);
+            }
         } else {
             setHistory([]);
         }
@@ -60,7 +67,7 @@ const Saved = () => {
               { text: "OK", 
                 onPress: async () => { 
                     await store.deleteAll();
-                    setFetchedHistory(false);
+                    setHistory([]);
                 }
               }
             ],
@@ -90,7 +97,7 @@ const Saved = () => {
                                 <View style={styles.row}>
                                     <SwipeDeleteComponent onDelete={() => {
                                         store.deleteItem(item.id);
-                                        setFetchedHistory(false);
+                                        setHistory([...history.filter(h => h.id !== item.id)])
                                     }}>
                                         <View style={styles.savedBill}>
                                         <OutputComponent title={description} data={item} style={styles.output} />

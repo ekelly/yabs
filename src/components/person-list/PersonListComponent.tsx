@@ -8,8 +8,14 @@ interface PersonListComponentProps {
     setFirstPersonNameRef: (firstPersonName: TextInput | null) => void,
 }
 
-let moneyInputList: Array<{ input: TextInput | null, elementId: string }> = [];
-let nameInputList: Array<{ input: TextInput | null, elementId: string }> = [];
+interface TextInputHolder {
+    input: TextInput | null;
+    type: 'name' | 'money';
+    elementId: string;
+}
+
+let moneyInputList: Array<TextInputHolder> = [];
+let nameInputList: Array<TextInputHolder> = [];
 
 const PersonListComponent = ({ setFirstPersonNameRef }: PersonListComponentProps) => {
     const { state, actions: { addPerson }} = useContext(BillContext);
@@ -67,13 +73,13 @@ const PersonListComponent = ({ setFirstPersonNameRef }: PersonListComponentProps
                         index={index} 
                         setNameInputRef={(nameInput, id) => {
                             if (!nameInputList.map(item => item.elementId).includes(id)) {
-                                nameInputList.push({ elementId: id, input: nameInput });
+                                nameInputList.push({ elementId: id, input: nameInput, type: 'name' });
                             }
                             if (index === 0) setFirstPersonNameRef(nameInput);
                         }}
                         setContributionInputRef={(contributionInput, id) => {
                             if (!moneyInputList.map(item => item.elementId).includes(id)) {
-                                moneyInputList.push({ elementId: id, input: contributionInput });
+                                moneyInputList.push({ elementId: id, input: contributionInput, type: 'money' });
                             }
                         }}
                         onEndEditing={transitionToNextFocusElement}

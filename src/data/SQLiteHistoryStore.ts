@@ -26,6 +26,7 @@ const SQL_INSERT_PERSON = `INSERT OR REPLACE INTO ${TABLE_PEOPLE}(${COLUMN_PERSO
 const SQL_FETCH_BILLS = `SELECT * FROM ${TABLE_BILLS} ORDER BY ${COLUMN_TIMESTAMP} DESC`;
 const SQL_FETCH_PEOPLE = `SELECT * FROM ${TABLE_PEOPLE}`;
 const SQL_DELETE_BILL = `DELETE FROM ${TABLE_BILLS} WHERE ${COLUMN_ID} = ?`;
+const SQL_DELETE_PERSON_FROM_BILL = `DELETE FROM ${TABLE_PEOPLE} WHERE ${COLUMN_PERSON_ID} = ? AND ${COLUMN_BILL_ID} = ?`;
 const SQL_DELETE_PEOPLE_BY_BILL_ID = `DELETE FROM ${TABLE_PEOPLE} WHERE ${COLUMN_BILL_ID} = ?`;
 const SQL_DELETE_ALL_BILLS = `DELETE FROM ${TABLE_BILLS}`;
 const SQL_DELETE_ALL_PEOPLE = `DELETE FROM ${TABLE_PEOPLE}`;
@@ -180,6 +181,24 @@ export class SQLiteHistoryStore implements HistoryStore {
                     console.log(`Deleted people associated with bill ${id} from person table`);
                 }, (tx, error) => {
                     console.log(`Error deleting people associated with bill ${id} from person table due to ${error.message}`);
+                    return false;
+                });
+            }, (error) => {
+                reject(error.message);
+            }, () => {
+                resolve();
+            });
+        });
+    }
+
+    async deletePersonFromBill(personId: string, billId: string) {
+        let db = this.#db;
+        return new Promise<void>((resolve, reject) => {
+            db.transaction((transaction) => {
+                transaction.executeSql(SQL_DELETE_PERSON_FROM_BILL, [personId, billId], (tx, result) => {
+                    console.log(`Deleted person ${personId} from bill ${billId}`);
+                }, (tx, error) => {
+                    console.log(`Error deleting ${personId} from bill ${billId} due to ${error.message}`);
                     return false;
                 });
             }, (error) => {

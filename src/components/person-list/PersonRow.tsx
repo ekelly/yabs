@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Context as BillContext, Person } from "../../context/BillContext";
+import { Context as HistoryContext } from "../../context/HistoryContext";
 import { isNumeric } from "../../utils/NumberUtils";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -17,6 +18,7 @@ interface PersonRowProps {
 const PersonRow = ({ person, index, setNameInputRef, setContributionInputRef, onEndEditing }: PersonRowProps) => {
     const navigation = useNavigation();
     const { state, actions: { updateShare, updatePersonName, deletePerson }} = useContext(BillContext);
+    const { state: { store }} = useContext(HistoryContext);
     const [personShare, setPersonShare] = useState<string>(""+person.share);
 
     useEffect(() => {
@@ -24,7 +26,10 @@ const PersonRow = ({ person, index, setNameInputRef, setContributionInputRef, on
     }, [person, state.transactions]);
 
     return (
-        <SwipeDeleteComponent onDelete={() => deletePerson(person.id)}>
+        <SwipeDeleteComponent onDelete={() => {
+            deletePerson(person.id);
+            store.deletePersonFromBill(person.id, state.id);
+        }}>
             <View style={styles.person}>
                 <TextInput
                     placeholder={`Person ${index+1}`}
